@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_main">16dp</dimen>
+    <dimen name="height_title">56dp</dimen>
+    <dimen name="back_button_size">48dp</dimen>
+</resources>
