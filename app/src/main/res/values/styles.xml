@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MySwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/blue</item>
+    </style>
+    <style name="ToolbarTitleText" >
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="MainToolbarTitleText" >
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingStart">16dp</item>
+    </style>
+</resources>

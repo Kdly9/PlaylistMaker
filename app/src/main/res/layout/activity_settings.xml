@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarBack"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_title"
+        android:layout_marginBottom="@dimen/margin_bottom_toolbar"
+        android:background="@color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/button_settings_text"
+        app:titleTextAppearance="@style/ToolbarTitleText" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ys_text_medium"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/theme_text"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:thumbTintMode="screen" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/share"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/share_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_support"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/support_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/user_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+</LinearLayout>
