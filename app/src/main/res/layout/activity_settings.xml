@@ -2,133 +2,64 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarBack"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_title"
-        android:orientation="horizontal"
-        android:layout_marginBottom="23dp">
+        android:layout_marginBottom="@dimen/margin_bottom_toolbar"
+        android:background="@color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/button_settings_text"
+        app:titleTextAppearance="@style/ToolbarTitleText" />
 
-        <ImageButton
-            android:id="@+id/backArrow"
-            android:layout_width="@dimen/back_button_size"
-            android:layout_height="@dimen/back_button_size"
-            android:src="@drawable/ic_arrow_back"
-            android:background="@color/white"
-            app:iconTint="@color/black"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_settings_text"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/black"
-            android:textSize="22sp"
-            android:fontFamily="@font/ys_text_medium"/>
-    </LinearLayout>
-
-    <RelativeLayout
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:paddingStart="@dimen/padding_main">
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ys_text_medium"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/theme_text"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:thumbTintMode="screen" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/theme_text"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:fontFamily="@font/ys_text_medium"/>
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:checked="false"
-            android:theme="@style/MySwitch"
-            />
-    </RelativeLayout>
-
-    <RelativeLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:paddingStart="@dimen/padding_main"
-        android:paddingEnd="12dp">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/share"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/share_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/share_text"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:fontFamily="@font/ys_text_medium"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/share"/>
-    </RelativeLayout>
-
-    <RelativeLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:paddingStart="@dimen/padding_main"
-        android:paddingEnd="12dp">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_support"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/support_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/support_text"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:fontFamily="@font/ys_text_medium"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_support"/>
-    </RelativeLayout>
-
-    <RelativeLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:paddingStart="@dimen/padding_main"
-        android:paddingEnd="12dp">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:fontFamily="@font/ys_text_medium"
+        android:paddingHorizontal="@dimen/padding_main"
+        android:paddingVertical="@dimen/menu_padding_vertical"
+        android:text="@string/user_text"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/user_text"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:fontFamily="@font/ys_text_medium"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_right"/>
-    </RelativeLayout>
 </LinearLayout>
