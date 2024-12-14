@@ -31,5 +31,6 @@ class MainActivity : AppCompatActivity() {
             val mediaIntent = Intent(this, SettingsActivity::class.java)
             startActivity(mediaIntent)
         }
+
     }
 }
