@@ -9,6 +9,8 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarBack"
         style="@style/ToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_title"
         android:layout_marginBottom="@dimen/margin_bottom_toolbar"
         android:background="?attr/colorSecondary"
         app:title="@string/button_settings_text"
@@ -18,8 +20,7 @@
         style="@style/SettingsViewStyle"
         android:checked="false"
         android:gravity="center_vertical"
-        android:text="@string/theme_text"
-       />
+        android:text="@string/theme_text" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shareButton"

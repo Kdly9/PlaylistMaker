@@ -1,12 +1,8 @@
 package com.example.playlistmaker
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,15 +28,7 @@ class SettingsActivity : AppCompatActivity() {
                 getString(R.string.practicum_url)
             )
             val chooser = Intent.createChooser(shareIntent, getString(R.string.share_label))
-            if (shareIntent.resolveActivity(packageManager) != null) {
-                startActivity(chooser)
-            } else {
-                Toast.makeText(
-                    this,
-                    getString(R.string.no_apps_available_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showActivityOrToast(chooser)
         }
         val supportButton = findViewById<TextView>(R.id.supportButton)
         supportButton.setOnClickListener {
@@ -55,30 +43,26 @@ class SettingsActivity : AppCompatActivity() {
                 Intent.EXTRA_SUBJECT,
                 getString(R.string.mail_topic)
             )
-            try {
-                startActivity(supportIntent)
-            } catch (ex: RuntimeException) {
-                Toast.makeText(
-                    this,
-                    getString(R.string.no_apps_available_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showActivityOrToast(supportIntent)
         }
 
         val agreementButton = findViewById<TextView>(R.id.userAgreement)
         agreementButton.setOnClickListener {
             val showIntent = Intent(Intent.ACTION_VIEW)
             showIntent.data = Uri.parse(getString(R.string.agreement_url))
-            try {
-                startActivity(showIntent)
-            } catch (ex: RuntimeException) {
-                Toast.makeText(
-                    this,
-                    getString(R.string.no_apps_available_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showActivityOrToast(showIntent)
+        }
+    }
+
+    private fun showActivityOrToast(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (ex: RuntimeException) {
+            Toast.makeText(
+                this,
+                getString(R.string.no_apps_available_error),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
