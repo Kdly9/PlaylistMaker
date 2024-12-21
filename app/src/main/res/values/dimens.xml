@@ -8,4 +8,9 @@
     <dimen name="margin_bottom_toolbar">24dp</dimen>
     <dimen name="margin_bottom_toolbar_main">8dp</dimen>
     <dimen name="corner_radius">16dp</dimen>
+    <dimen name="text_padding">8dp</dimen>
+    <dimen name="text_padding_end">36dp</dimen>
+    <dimen name="text_padding_start">36dp</dimen>
+    <dimen name="text_margin_horizontal">16dp</dimen>
+    <dimen name="text_margin_vertical">8dp</dimen>
 </resources>

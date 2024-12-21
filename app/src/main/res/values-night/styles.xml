@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="MySwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/blue</item>
+    </style>
+
     <style name="ToolbarStyle">
         <item name="navigationIcon">@drawable/ic_arrow_back</item>
     </style>
@@ -8,7 +12,7 @@
     <style name="ToolbarTitleText">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="MainToolbarTitleText">
@@ -39,21 +43,29 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:paddingHorizontal">@dimen/padding_main</item>
         <item name="android:paddingVertical">@dimen/menu_padding_vertical</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SettingsSwitchViewStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+        <item name="android:paddingHorizontal">@dimen/padding_main</item>
+        <item name="android:paddingVertical">@dimen/menu_padding_vertical</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="EditTextStyle">
-        <item name="android:background">@drawable/edittext_bg</item>
-        <item name="android:drawableTint">@color/silver_gray</item>
+        <item name="android:background">@drawable/edittext_bg_night</item>
         <item name="android:textColor">@color/rich_black</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColorHint">@color/silver_gray</item>
+        <item name="android:textColorHint">@color/rich_black</item>
     </style>
 
     <style name="EditIconsStyle">
-        <item name="android:tint">@color/silver_gray</item>
+        <item name="android:tint">@color/rich_black</item>
     </style>
-
 </resources>
