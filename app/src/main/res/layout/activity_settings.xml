@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSecondary"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarBack"
+        style="@style/ToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_title"
+        android:layout_marginBottom="@dimen/margin_bottom_toolbar"
+        android:background="?attr/colorSecondary"
+        app:title="@string/button_settings_text"
+        app:titleTextAppearance="@style/ToolbarTitleText" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/SettingsViewStyle"
+        android:checked="false"
+        android:gravity="center_vertical"
+        android:text="@string/theme_text" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shareButton"
+        style="@style/SettingsViewStyle"
+        android:drawableEnd="@drawable/share"
+        android:text="@string/share_text" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/supportButton"
+        style="@style/SettingsViewStyle"
+        android:drawableEnd="@drawable/ic_support"
+        android:text="@string/support_text" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/userAgreement"
+        style="@style/SettingsViewStyle"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:text="@string/user_text" />
+
+</LinearLayout>

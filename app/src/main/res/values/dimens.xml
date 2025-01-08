@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_main">16dp</dimen>
+    <dimen name="padding_end">12dp</dimen>
+    <dimen name="menu_padding_vertical">20dp</dimen>
+    <dimen name="height_title">56dp</dimen>
+    <dimen name="back_button_size">48dp</dimen>
+    <dimen name="margin_bottom_toolbar">24dp</dimen>
+    <dimen name="margin_bottom_toolbar_main">8dp</dimen>
+    <dimen name="corner_radius">16dp</dimen>
+    <dimen name="text_padding">8dp</dimen>
+    <dimen name="text_padding_end">36dp</dimen>
+    <dimen name="text_padding_start">36dp</dimen>
+    <dimen name="text_margin_horizontal">16dp</dimen>
+    <dimen name="text_margin_vertical">8dp</dimen>
+    <dimen name="track_image_size">45dp</dimen>
+</resources>

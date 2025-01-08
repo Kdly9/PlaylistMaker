@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ToolbarStyle">
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
+    </style>
+
+    <style name="ToolbarTitleText">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="MainToolbarTitleText">
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingStart">16dp</item>
+    </style>
+
+    <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_marginStart">@dimen/padding_main</item>
+        <item name="android:layout_marginEnd">@dimen/padding_main</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">22sp</item>
+        <item name="cornerRadius">@dimen/corner_radius</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">10dp</item>
+        <item name="iconTint">@color/black</item>
+    </style>
+
+    <style name="SettingsViewStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:paddingHorizontal">@dimen/padding_main</item>
+        <item name="android:paddingVertical">@dimen/menu_padding_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="EditTextStyle">
+        <item name="android:background">@drawable/edittext_bg</item>
+        <item name="android:drawableTint">@color/silver_gray</item>
+        <item name="android:textColor">@color/rich_black</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColorHint">@color/silver_gray</item>
+    </style>
+
+    <style name="EditIconsStyle">
+        <item name="android:tint">@color/silver_gray</item>
+    </style>
+
+    <style name="TrackNameText">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+</resources>
