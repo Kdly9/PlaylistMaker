@@ -72,4 +72,9 @@
     <style name="TrackNameText">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="UpdateButtonStyle">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/rich_black</item>
+    </style>
 </resources>
