@@ -17,7 +17,4 @@
     <string name="practicum_url">https://practicum.yandex.ru/android-developer/</string>
     <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
     <string name="edit_search">Поиск</string>
-    <string name="nothing_was_found">Ничего не нашлось</string>
-    <string name="connect_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
-    <string name="update">Обновить</string>
 </resources>
