@@ -117,7 +117,7 @@ class SearchActivity : AppCompatActivity() {
                     ) {
                         showErrorConnection(false)
                         showErrorData(false)
-                        if (response.code() == 200) {
+                        if (response.isSuccessful) {
                             tracksData.clear()
                             if (response.body()?.results?.isNotEmpty() == true) {
                                 tracksData.addAll(response.body()?.results!!)

@@ -20,14 +20,14 @@ class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
     private var trackOwner: TextView = parent.findViewById(R.id.trackOwner)
     private var trackTime: TextView = parent.findViewById(R.id.trackTime)
     private val context = parent.context
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     fun bind(track: Track) {
         Glide.with(context).load(track.artworkUrl100).placeholder(R.drawable.mock_image)
             .centerInside().transform(RoundedCorners(dpToPx(2f, context)))
             .into(trackImage)
         trackOwner.text = track.artistName
-        trackTime.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime.toLong())
+        trackTime.text = dateFormat.format(track.trackTime.toLong())
         trackName.text = track.trackName
     }
 }
