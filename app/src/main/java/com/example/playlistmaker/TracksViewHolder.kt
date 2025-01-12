@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.entity.Track
+import java.util.Locale
 
 class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
     private var trackImage: ImageView = parent.findViewById(R.id.trackImage)
@@ -18,12 +20,14 @@ class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
     private var trackOwner: TextView = parent.findViewById(R.id.trackOwner)
     private var trackTime: TextView = parent.findViewById(R.id.trackTime)
     private val context = parent.context
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     fun bind(track: Track) {
-        Glide.with(context).load(track.artworkUrl100).placeholder(R.drawable.mock_image).centerInside().transform(RoundedCorners(dpToPx(2f, context)))
+        Glide.with(context).load(track.artworkUrl100).placeholder(R.drawable.mock_image)
+            .centerInside().transform(RoundedCorners(dpToPx(2f, context)))
             .into(trackImage)
         trackOwner.text = track.artistName
-        trackTime.text = track.trackTime
+        trackTime.text = dateFormat.format(track.trackTime.toLong())
         trackName.text = track.trackName
     }
 }
@@ -48,5 +52,6 @@ fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
-        context.resources.displayMetrics).toInt()
+        context.resources.displayMetrics
+    ).toInt()
 }
