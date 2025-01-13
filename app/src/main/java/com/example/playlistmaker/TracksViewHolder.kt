@@ -32,7 +32,11 @@ class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
     }
 }
 
-class TracksAdapter(private val tracksList: ArrayList<Track>) :
+interface OnTrackClickListener {
+    fun onTrackClick(track: Track)
+}
+
+class TracksAdapter(private val tracksList: ArrayList<Track>, private val listener: OnTrackClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.search_view, parent, false)
@@ -41,6 +45,14 @@ class TracksAdapter(private val tracksList: ArrayList<Track>) :
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(tracksList[position])
+        holder.itemView.setOnClickListener {
+            listener.onTrackClick(tracksList[position])
+        }
+    }
+    fun updateData(newTracks: List<Track>) {
+        tracksList.clear()
+        tracksList.addAll(newTracks)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {

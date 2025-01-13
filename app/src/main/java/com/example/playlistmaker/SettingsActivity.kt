@@ -7,17 +7,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
+
+const val SETTINGS_PREFERENCES = "playlist_maker_prefs"
+const val DARK_THEME_KEY = "dark_theme_enabled"
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPrefs = getSharedPreferences(SETTINGS_PREFERENCES, MODE_PRIVATE)
 
         setContentView(R.layout.activity_settings)
 
         val backButton = findViewById<Toolbar>(R.id.toolbarBack)
         backButton.setNavigationOnClickListener {
-            val mainActivityIntent = Intent(this, MainActivity::class.java)
-            startActivity(mainActivityIntent)
+            finish()
         }
         val shareButton = findViewById<TextView>(R.id.shareButton)
         shareButton.setOnClickListener {
@@ -51,6 +55,15 @@ class SettingsActivity : AppCompatActivity() {
             val showIntent = Intent(Intent.ACTION_VIEW)
             showIntent.data = Uri.parse(getString(R.string.agreement_url))
             showActivityOrToast(showIntent)
+        }
+
+        val switchTheme = findViewById<SwitchMaterial>(R.id.themeSwitch)
+        switchTheme.isChecked = sharedPrefs.getBoolean(DARK_THEME_KEY, false)
+        switchTheme.setOnCheckedChangeListener { _, checked ->
+            sharedPrefs.edit()
+                .putBoolean(DARK_THEME_KEY, checked)
+                .apply()
+            (application as App).switchTheme(checked)
         }
     }
 

@@ -17,8 +17,8 @@
         app:titleTextAppearance="@style/ToolbarTitleText" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitch"
         style="@style/SettingsViewStyle"
-        android:checked="false"
         android:gravity="center_vertical"
         android:text="@string/theme_text" />
 

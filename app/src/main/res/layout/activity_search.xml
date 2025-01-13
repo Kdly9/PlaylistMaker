@@ -58,6 +58,17 @@
             android:visibility="gone" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/lookingText"
+        style="@style/SearchTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/looking_for"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/errorSearch"
         android:layout_width="wrap_content"
@@ -114,7 +125,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <Button
+        android:id="@+id/clearHistory"
+        style="@style/UpdateButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/clear_history"
+        android:textSize="14sp"
+        android:visibility="gone"/>
 
 </LinearLayout>
