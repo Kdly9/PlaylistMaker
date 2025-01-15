@@ -145,9 +145,14 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showHistory(show: Boolean) {
         if (show) {
-            clearButtonHistory.visibility = View.VISIBLE
-            lookingFor.visibility = View.VISIBLE
             tracksHistory = readTracksHistory(sharedPrefs) ?: ArrayList()
+            if (tracksHistory.isEmpty()){
+                clearButtonHistory.visibility = View.GONE
+                lookingFor.visibility = View.GONE
+            } else {
+                clearButtonHistory.visibility = View.VISIBLE
+                lookingFor.visibility = View.VISIBLE
+            }
             tracksAdapter.updateData(tracksHistory)
         } else {
             clearButtonHistory.visibility = View.GONE
