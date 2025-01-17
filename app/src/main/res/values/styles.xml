@@ -70,4 +70,20 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/rich_black</item>
     </style>
+
+    <style name="PlayerTextStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/silver_gray</item>
+    </style>
+
+    <style name="PlayerDataTextStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/rich_black</item>
+    </style>
+
+    <style name="TimeStyle">
+        <item name="android:textColor">@color/rich_black</item>
+    </style>
 </resources>

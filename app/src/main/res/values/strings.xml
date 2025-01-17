@@ -22,4 +22,9 @@
     <string name="update">Обновить</string>
     <string name="looking_for">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="duration_text">Длительность</string>
+    <string name="album_text">Альбом</string>
+    <string name="year_text">Год</string>
+    <string name="style_text">Жанр</string>
+    <string name="country_text">Страна</string>
 </resources>
