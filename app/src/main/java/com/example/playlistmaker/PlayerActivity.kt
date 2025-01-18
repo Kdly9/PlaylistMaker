@@ -26,15 +26,15 @@ class PlayerActivity : AppCompatActivity() {
             finish()
         }
         val track = Track(
-            trackId = intent.getStringExtra(Constants.ID) ?: "",
-            trackName = intent.getStringExtra(Constants.NAME) ?: "",
-            artistName = intent.getStringExtra(Constants.ARTIST_NAME) ?: "",
-            trackTime = intent.getStringExtra(Constants.TRACK_TIME) ?: "",
-            artworkUrl100 = intent.getStringExtra(Constants.ART_WORK_URL) ?: "",
-            collectionName = intent.getStringExtra(Constants.COLLECTION_NAME) ?: "",
-            releaseDate = intent.getStringExtra(Constants.RELEASE_DATE) ?: "",
-            primaryGenreName = intent.getStringExtra(Constants.PRIMARY_GENRE_NAME) ?: "",
-            country = intent.getStringExtra(Constants.COUNTRY) ?: "",
+            trackId = intent.getStringExtra(Constants.ID).orEmpty(),
+            trackName = intent.getStringExtra(Constants.NAME).orEmpty(),
+            artistName = intent.getStringExtra(Constants.ARTIST_NAME).orEmpty(),
+            trackTime = intent.getStringExtra(Constants.TRACK_TIME).orEmpty(),
+            artworkUrl100 = intent.getStringExtra(Constants.ART_WORK_URL).orEmpty(),
+            collectionName = intent.getStringExtra(Constants.COLLECTION_NAME).orEmpty(),
+            releaseDate = intent.getStringExtra(Constants.RELEASE_DATE).orEmpty(),
+            primaryGenreName = intent.getStringExtra(Constants.PRIMARY_GENRE_NAME).orEmpty(),
+            country = intent.getStringExtra(Constants.COUNTRY).orEmpty(),
         )
 
         val trackImage = findViewById<ImageView>(R.id.image)
