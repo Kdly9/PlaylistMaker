@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 
 class App : Application() {
@@ -9,7 +8,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         val sharedPrefs = getSharedPreferences(SETTINGS_PREFERENCES, MODE_PRIVATE)
-        switchTheme(sharedPrefs.getBoolean(DARK_THEME_KEY, false))
+        if(sharedPrefs.contains(DARK_THEME_KEY)){
+            switchTheme(sharedPrefs.getBoolean(DARK_THEME_KEY, false))
+        }
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {

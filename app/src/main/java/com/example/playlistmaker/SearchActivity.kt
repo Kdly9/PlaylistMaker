@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.entity.Constants
 import com.example.playlistmaker.entity.Track
 import com.example.playlistmaker.entity.TrackResponse
 import com.google.gson.Gson
@@ -61,6 +63,19 @@ class SearchActivity : AppCompatActivity() {
             }
             tracksHistory.add(0, track)
             writeTracksHistory(sharedPrefs, tracksHistory)
+
+            val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
+                putExtra(Constants.ID, track.trackId)
+                putExtra(Constants.NAME, track.trackName)
+                putExtra(Constants.ARTIST_NAME, track.artistName)
+                putExtra(Constants.COLLECTION_NAME, track.collectionName)
+                putExtra(Constants.RELEASE_DATE, track.releaseDate)
+                putExtra(Constants.PRIMARY_GENRE_NAME, track.primaryGenreName)
+                putExtra(Constants.COUNTRY, track.country)
+                putExtra(Constants.TRACK_TIME, track.trackTime)
+                putExtra(Constants.ART_WORK_URL, track.artworkUrl100)
+            }
+            startActivity(playerIntent)
         }
     })
     private var lastSearchText = ""
