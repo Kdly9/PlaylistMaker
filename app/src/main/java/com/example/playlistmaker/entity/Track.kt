@@ -12,7 +12,8 @@ data class Track(
     var collectionName: String?,
     var releaseDate: String,
     var primaryGenreName: String,
-    var country: String
+    var country: String,
+    var previewUrl: String
 ) {
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 }
@@ -27,4 +28,5 @@ object Constants {
     const val COUNTRY = "COUNTRY"
     const val TRACK_TIME = "TRACK_TIME"
     const val ART_WORK_URL = "ART_WORK_URL"
+    const val PREVIEW_URL = "PREVIEW_URL"
 }
