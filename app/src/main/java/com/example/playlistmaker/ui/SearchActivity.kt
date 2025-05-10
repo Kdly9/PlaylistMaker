@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -20,27 +20,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.entity.Constants
-import com.example.playlistmaker.entity.Track
-import com.example.playlistmaker.entity.TrackResponse
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.models.Constants
+import com.example.playlistmaker.domain.models.Track
 
 const val TRACKS_HISTORY_KEY = "tracks_history"
 
 class SearchActivity : AppCompatActivity() {
     private var lastText = ""
-    private val itunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(itunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val itunesService = retrofit.create(itunesApi::class.java)
+
     private lateinit var searchText: EditText
     private val tracksData = ArrayList<Track>()
     private lateinit var searchErrorImage: ImageView
@@ -59,10 +49,20 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var progressBar: ProgressBar
 
+    private val trackInteractor = Creator.provideTrackInteractor()
+    private val tracksHistoryRepository by lazy(LazyThreadSafetyMode.NONE) {
+        Creator.getTracksHistoryRepository(
+            applicationContext
+        )
+    }
+    private val tracksHistoryInteractor by lazy(LazyThreadSafetyMode.NONE) {
+        Creator.getTracksHistoryRepositoryInteractor(tracksHistoryRepository)
+    }
+
     private val tracksAdapter = TracksAdapter(tracksData, object : OnTrackClickListener {
         override fun onTrackClick(track: Track) {
             if (clickDebounce()) {
-                tracksHistory = readTracksHistory(sharedPrefs) ?: ArrayList()
+                tracksHistory = tracksHistoryInteractor.getHistory() as ArrayList<Track>
                 if (tracksHistory.size >= 10) {
                     tracksHistory.removeAt(tracksHistory.size - 1)
                 }
@@ -71,7 +71,7 @@ class SearchActivity : AppCompatActivity() {
                     tracksHistory.remove(track)
                 }
                 tracksHistory.add(0, track)
-                writeTracksHistory(sharedPrefs, tracksHistory)
+                tracksHistoryInteractor.saveHistory(tracksHistory)
 
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
                     putExtra(Constants.ID, track.trackId)
@@ -175,7 +175,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showHistory(show: Boolean) {
         if (show) {
-            tracksHistory = readTracksHistory(sharedPrefs) ?: ArrayList()
+            tracksHistory = tracksHistoryInteractor.getHistory() as ArrayList<Track>
             if (tracksHistory.isEmpty()) {
                 clearButtonHistory.visibility = View.GONE
                 lookingFor.visibility = View.GONE
@@ -184,12 +184,14 @@ class SearchActivity : AppCompatActivity() {
                 lookingFor.visibility = View.VISIBLE
             }
             tracksAdapter.updateData(tracksHistory)
+            tracksAdapter.notifyDataSetChanged()
         } else {
             clearButtonHistory.visibility = View.GONE
             lookingFor.visibility = View.GONE
-            tracksAdapter.updateData(ArrayList())
-        }
 
+            tracksAdapter.updateData(ArrayList())
+            tracksAdapter.notifyDataSetChanged()
+        }
     }
 
 
@@ -199,52 +201,31 @@ class SearchActivity : AppCompatActivity() {
             showErrorConnection(false)
             showErrorData(false)
             progressBar.visibility = View.VISIBLE
-            itunesService.search(lastSearchText)
-                .enqueue(object : Callback<TrackResponse> {
-                    @SuppressLint("NotifyDataSetChanged")
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        if (response.code() == 200) {
-                            hasError = false
-                            tracksData.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracksData.addAll(response.body()?.results!!)
-                            }
-                            if (tracksData.isEmpty()) {
-                                showErrorData(true)
-                            }
+            trackInteractor.searchTracks(lastSearchText, object : TracksInteractor.TracksConsumer {
+                override fun consume(foundTracks: List<Track>) {
+                    handler.post {
+                        tracksData.clear()
+                        if (foundTracks.isNotEmpty()) {
+                            tracksData.addAll(foundTracks)
                         } else {
-                            tracksData.clear()
-                            showErrorConnection(true)
+                            showErrorData(true)
                         }
                         progressBar.visibility = View.GONE
                         tracksAdapter.notifyDataSetChanged()
                     }
+                }
 
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                override fun failure() {
+                    handler.post {
                         showHistory(false)
                         tracksData.clear()
                         progressBar.visibility = View.GONE
                         tracksAdapter.notifyDataSetChanged()
                         showErrorConnection(true)
                     }
-                })
+                }
+            })
         }
-    }
-
-    fun readTracksHistory(sharedPreferences: SharedPreferences): ArrayList<Track>? {
-        val json = sharedPreferences.getString(TRACKS_HISTORY_KEY, null) ?: return null
-        val type = object : TypeToken<List<Track>>() {}.type
-        return Gson().fromJson(json, type)
-    }
-
-    fun writeTracksHistory(sharedPreferences: SharedPreferences, tracks: ArrayList<Track>) {
-        val json = Gson().toJson(tracks)
-        sharedPreferences.edit()
-            .putString(TRACKS_HISTORY_KEY, json)
-            .apply()
     }
 
     private fun showErrorData(show: Boolean) {

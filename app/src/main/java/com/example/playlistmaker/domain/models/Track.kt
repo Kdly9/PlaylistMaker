@@ -1,7 +1,6 @@
-package com.example.playlistmaker.entity
+package com.example.playlistmaker.domain.models
 
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 data class Track(
     var trackId: String,
