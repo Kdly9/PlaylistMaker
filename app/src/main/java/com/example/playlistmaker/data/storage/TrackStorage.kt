@@ -5,4 +5,5 @@ import com.example.playlistmaker.data.dto.TrackDto
 interface TrackStorage {
     fun saveTracks(tracks: List<TrackDto>)
     fun getTracks(): List<TrackDto>
+    fun clear()
 }

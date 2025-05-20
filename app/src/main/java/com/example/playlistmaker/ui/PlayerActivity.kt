@@ -41,32 +41,22 @@ class PlayerActivity : AppCompatActivity() {
 
         val backButton = findViewById<Toolbar>(R.id.playerToolbar)
         backButton.setOnClickListener {
+            setResult(RESULT_OK)
             finish()
         }
-        val track = Track(
-            trackId = intent.getStringExtra(Constants.ID).orEmpty(),
-            trackName = intent.getStringExtra(Constants.NAME).orEmpty(),
-            artistName = intent.getStringExtra(Constants.ARTIST_NAME).orEmpty(),
-            trackTime = intent.getStringExtra(Constants.TRACK_TIME).orEmpty(),
-            artworkUrl100 = intent.getStringExtra(Constants.ART_WORK_URL).orEmpty(),
-            collectionName = intent.getStringExtra(Constants.COLLECTION_NAME).orEmpty(),
-            releaseDate = intent.getStringExtra(Constants.RELEASE_DATE).orEmpty(),
-            primaryGenreName = intent.getStringExtra(Constants.PRIMARY_GENRE_NAME).orEmpty(),
-            country = intent.getStringExtra(Constants.COUNTRY).orEmpty(),
-            previewUrl = intent.getStringExtra(Constants.PREVIEW_URL).orEmpty()
-        )
+        val track = intent.getParcelableExtra<Track>(Constants.SELECTED)
 
         val trackImage = findViewById<ImageView>(R.id.image)
         val trackName = findViewById<TextView>(R.id.track)
-        trackName.text = track.trackName
+        trackName.text = track?.trackName
         val trackOwner = findViewById<TextView>(R.id.trackOwner)
-        trackOwner.text = track.artistName
+        trackOwner.text = track?.artistName
         val durationText = findViewById<TextView>(R.id.durationText)
         durationText.text =
-            dateFormat.format(track.trackTime.toLong())
+            dateFormat.format(track?.trackTime?.toLong())
         val albumText = findViewById<TextView>(R.id.albumText)
         val albumTitle = findViewById<TextView>(R.id.albumTitle)
-        if (track.collectionName!!.isEmpty()) {
+        if (track?.collectionName!!.isEmpty()) {
             albumTitle.visibility = View.GONE
             albumText.visibility = View.GONE
         } else {

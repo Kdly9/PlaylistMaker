@@ -15,15 +15,19 @@ class SharedPrefsTrackStorage(context: Context) : TrackStorage {
     override fun saveTracks(tracks: List<TrackDto>) {
         val json = Gson().toJson(tracks)
         sharedPreferences.edit() {
-            putString(com.example.playlistmaker.ui.TRACKS_HISTORY_KEY, json)
+            putString(TRACKS_HISTORY_KEY, json)
         }
     }
 
     override fun getTracks(): List<TrackDto> {
         val json =
-            sharedPreferences.getString(com.example.playlistmaker.ui.TRACKS_HISTORY_KEY, null)
+            sharedPreferences.getString(TRACKS_HISTORY_KEY, null)
                 ?: return emptyList()
         val type = object : TypeToken<List<TrackDto>>() {}.type
         return Gson().fromJson(json, type)
+    }
+
+    override fun clear() {
+        sharedPreferences.edit().remove(TRACKS_HISTORY_KEY).apply()
     }
 }

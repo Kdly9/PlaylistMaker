@@ -5,4 +5,5 @@ import com.example.playlistmaker.domain.models.Track
 interface TracksHistoryInteractor {
     fun getHistory(): List<Track>
     fun saveHistory(tracks: List<Track>)
+    fun clearHistory()
 }

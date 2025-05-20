@@ -12,4 +12,9 @@ class TracksHistoryInteractorImpl(private val repository: TracksHistoryRepositor
     override fun saveHistory(tracks: List<Track>) {
         repository.saveTracks(tracks)
     }
+
+    override fun clearHistory() {
+        repository.clear()
+    }
+
 }

@@ -16,6 +16,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,8 +27,6 @@ import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.models.Constants
 import com.example.playlistmaker.domain.models.Track
-
-const val TRACKS_HISTORY_KEY = "tracks_history"
 
 class SearchActivity : AppCompatActivity() {
     private var lastText = ""
@@ -50,14 +50,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     private val trackInteractor = Creator.provideTrackInteractor()
-    private val tracksHistoryRepository by lazy(LazyThreadSafetyMode.NONE) {
-        Creator.getTracksHistoryRepository(
-            applicationContext
-        )
-    }
     private val tracksHistoryInteractor by lazy(LazyThreadSafetyMode.NONE) {
-        Creator.getTracksHistoryRepositoryInteractor(tracksHistoryRepository)
+        Creator.getTracksHistoryRepositoryInteractor()
     }
+
+    private lateinit var playerActivityResultLauncher: ActivityResultLauncher<Intent>
 
     private val tracksAdapter = TracksAdapter(tracksData, object : OnTrackClickListener {
         override fun onTrackClick(track: Track) {
@@ -74,18 +71,10 @@ class SearchActivity : AppCompatActivity() {
                 tracksHistoryInteractor.saveHistory(tracksHistory)
 
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
-                    putExtra(Constants.ID, track.trackId)
-                    putExtra(Constants.NAME, track.trackName)
-                    putExtra(Constants.ARTIST_NAME, track.artistName)
-                    putExtra(Constants.COLLECTION_NAME, track.collectionName)
-                    putExtra(Constants.RELEASE_DATE, track.releaseDate)
-                    putExtra(Constants.PRIMARY_GENRE_NAME, track.primaryGenreName)
-                    putExtra(Constants.COUNTRY, track.country)
-                    putExtra(Constants.TRACK_TIME, track.trackTime)
-                    putExtra(Constants.ART_WORK_URL, track.artworkUrl100)
-                    putExtra(Constants.PREVIEW_URL, track.previewUrl)
+                    putExtra(Constants.SELECTED, track)
                 }
-                startActivity(playerIntent)
+                playerActivityResultLauncher.launch(playerIntent)
+
             }
         }
     })
@@ -101,6 +90,15 @@ class SearchActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+
+        playerActivityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK && searchText.text.isEmpty()) {
+                showHistory(true)
+            }
+        }
+
 
         progressBar = findViewById(R.id.progressBar)
 
@@ -168,7 +166,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearButtonHistory.setOnClickListener {
-            sharedPrefs.edit().remove(TRACKS_HISTORY_KEY).apply()
+            tracksHistoryInteractor.clearHistory()
             showHistory(true)
         }
     }
