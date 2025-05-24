@@ -17,14 +17,15 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.domain.api.MediaInteractor
 import com.example.playlistmaker.domain.models.Constants
 import com.example.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
-    private var mediaPlayer = MediaPlayer()
-    private var playerState = STATE_DEFAULT
+    private val mediaPlayerInteractor = Creator.getMediaInteractor()
     private val uiHandler = Handler(Looper.getMainLooper())
     private val dateFormat by lazy {
         SimpleDateFormat(
@@ -79,18 +80,42 @@ class PlayerActivity : AppCompatActivity() {
             .centerInside().transform(RoundedCorners(dpToPx(8f, this)))
             .into(trackImage)
 
-        preparePlayer(track.previewUrl)
+        mediaPlayerInteractor.preparePlayer(track.previewUrl, object : MediaInteractor.Completion {
+            override fun completionAction() {
+                currentTimeText.text = dateFormat.format(0)
+                uiHandler.removeCallbacks(updateCurrentTimeRunnable)
+                playButton.background = ContextCompat.getDrawable(this@PlayerActivity, R.drawable.ic_play)
+            }
+
+            override fun errorPrepare() {
+                Toast.makeText(this@PlayerActivity, resources.getString(R.string.load_track_error), Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun startPlayer() {
+                playButton.background = ContextCompat.getDrawable(this@PlayerActivity, R.drawable.ic_pause)
+            }
+
+            override fun pausePlayer() {
+                uiHandler.removeCallbacks(updateCurrentTimeRunnable)
+                playButton.background = ContextCompat.getDrawable(this@PlayerActivity, R.drawable.ic_play)
+            }
+
+            override fun paused() {
+                uiHandler.post(updateCurrentTimeRunnable)
+            }
+        })
         currentTimeText = findViewById(R.id.currentTime)
 
         playButton = findViewById(R.id.playButton)
         playButton.setOnClickListener {
-            playbackControl()
+            mediaPlayerInteractor.playbackControl()
         }
     }
 
     private val updateCurrentTimeRunnable = object : Runnable {
         override fun run() {
-            currentTimeText.text = dateFormat.format(mediaPlayer.currentPosition)
+            currentTimeText.text = dateFormat.format(mediaPlayerInteractor.getCurrentPosition())
             uiHandler.postDelayed(this, UPDATE_TIME)
         }
     }
@@ -104,78 +129,17 @@ class PlayerActivity : AppCompatActivity() {
         ).toInt()
     }
 
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> {
-                pausePlayer()
-            }
-
-            STATE_PREPARED, STATE_PAUSED -> {
-                startPlayer()
-                uiHandler.post(updateCurrentTimeRunnable)
-            }
-
-            STATE_ERROR -> {
-                Toast.makeText(
-                    this,
-                    resources.getString(R.string.load_track_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun preparePlayer(url: String) {
-        try {
-            mediaPlayer.setDataSource(url)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener {
-                playerState = STATE_PREPARED
-            }
-            mediaPlayer.setOnCompletionListener {
-                currentTimeText.text = dateFormat.format(0)
-                uiHandler.removeCallbacks(updateCurrentTimeRunnable)
-                playButton.background = ContextCompat.getDrawable(this, R.drawable.ic_play)
-                playerState = STATE_PREPARED
-            }
-        } catch (_: Exception) {
-            playerState = STATE_ERROR
-            Toast.makeText(this, resources.getString(R.string.load_track_error), Toast.LENGTH_SHORT)
-                .show()
-        }
-
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playButton.background = ContextCompat.getDrawable(this, R.drawable.ic_pause)
-        playerState = STATE_PLAYING
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        uiHandler.removeCallbacks(updateCurrentTimeRunnable)
-        playButton.background = ContextCompat.getDrawable(this, R.drawable.ic_play)
-        playerState = STATE_PAUSED
-    }
-
-
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        mediaPlayerInteractor.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        mediaPlayerInteractor.release()
     }
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val STATE_ERROR = 4
         private const val UPDATE_TIME = 300L
     }
 }

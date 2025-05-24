@@ -1,18 +1,21 @@
 package com.example.playlistmaker.creator
 
 import android.content.Context
+import com.example.playlistmaker.data.MediaManagerImpl
 import com.example.playlistmaker.data.ThemeRepositoryImpl
 import com.example.playlistmaker.data.TracksHistoryRepositoryImpl
 import com.example.playlistmaker.data.TracksRepositoryImpl
 import com.example.playlistmaker.data.network.ItunesApiNetworkClient
 import com.example.playlistmaker.data.storage.SharedPrefsThemeStorage
 import com.example.playlistmaker.data.storage.SharedPrefsTrackStorage
+import com.example.playlistmaker.domain.api.MediaInteractor
 import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.example.playlistmaker.domain.api.ThemeRepository
 import com.example.playlistmaker.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.domain.api.TracksHistoryRepository
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.api.TracksRepository
+import com.example.playlistmaker.domain.impl.MediaPlayerInteractorImpl
 import com.example.playlistmaker.domain.impl.ThemeInteractorImpl
 import com.example.playlistmaker.domain.impl.TracksHistoryInteractorImpl
 import com.example.playlistmaker.domain.impl.TracksInteractorImpl
@@ -48,5 +51,9 @@ object Creator {
 
     fun getThemeInteractor(): ThemeInteractor {
         return ThemeInteractorImpl(getThemeRepository())
+    }
+
+    fun getMediaInteractor(): MediaInteractor {
+        return MediaPlayerInteractorImpl(MediaManagerImpl())
     }
 }
