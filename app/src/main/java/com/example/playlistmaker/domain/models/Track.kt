@@ -1,8 +1,10 @@
-package com.example.playlistmaker.entity
+package com.example.playlistmaker.domain.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Track(
     var trackId: String,
     var trackName: String,
@@ -14,19 +16,10 @@ data class Track(
     var primaryGenreName: String,
     var country: String,
     var previewUrl: String
-) {
+) : Parcelable {
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 }
 
 object Constants {
-    const val ID = "ID"
-    const val NAME = "NAME"
-    const val ARTIST_NAME = "ARTIST_NAME"
-    const val COLLECTION_NAME = "COLLECTION_NAME"
-    const val RELEASE_DATE = "RELEASE_DATE"
-    const val PRIMARY_GENRE_NAME = "PRIMARY_GENRE_NAME"
-    const val COUNTRY = "COUNTRY"
-    const val TRACK_TIME = "TRACK_TIME"
-    const val ART_WORK_URL = "ART_WORK_URL"
-    const val PREVIEW_URL = "PREVIEW_URL"
+    const val SELECTED = "selected_track"
 }

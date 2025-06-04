@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,15 +8,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 const val SETTINGS_PREFERENCES = "playlist_maker_prefs"
 const val DARK_THEME_KEY = "dark_theme_enabled"
 
 class SettingsActivity : AppCompatActivity() {
+
+    private var themeInteractor = Creator.getThemeInteractor()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPrefs = getSharedPreferences(SETTINGS_PREFERENCES, MODE_PRIVATE)
 
         setContentView(R.layout.activity_settings)
 
@@ -59,8 +64,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val switchTheme = findViewById<SwitchMaterial>(R.id.themeSwitch)
-        if (sharedPrefs.contains(DARK_THEME_KEY)) {
-            switchTheme.isChecked = sharedPrefs.getBoolean(DARK_THEME_KEY, false)
+        if (themeInteractor.checkParamsExisting()) {
+            switchTheme.isChecked = themeInteractor.isDarkMode()
         } else {
             val currentNightMode =
                 resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -77,9 +82,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         switchTheme.setOnCheckedChangeListener { _, checked ->
-            sharedPrefs.edit()
-                .putBoolean(DARK_THEME_KEY, checked)
-                .apply()
+            themeInteractor.enableDarkMode(checked)
             (application as App).switchTheme(checked)
         }
     }
