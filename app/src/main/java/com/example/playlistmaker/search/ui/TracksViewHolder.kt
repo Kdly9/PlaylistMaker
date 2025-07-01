@@ -1,0 +1,72 @@
+package com.example.playlistmaker.search.ui
+
+import android.content.Context
+import android.icu.text.SimpleDateFormat
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.R
+import com.example.playlistmaker.search.domain.models.Track
+import java.util.Locale
+
+class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
+    private var trackImage: ImageView = parent.findViewById(R.id.trackImage)
+    private var trackName: TextView = parent.findViewById(R.id.trackName)
+    private var trackOwner: TextView = parent.findViewById(R.id.trackOwner)
+    private var trackTime: TextView = parent.findViewById(R.id.trackTime)
+    private val context = parent.context
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+
+    fun bind(track: Track) {
+        Glide.with(context).load(track.artworkUrl100).placeholder(R.drawable.mock_image)
+            .centerInside().transform(RoundedCorners(dpToPx(2f, context)))
+            .into(trackImage)
+        trackOwner.text = track.artistName
+        trackTime.text = dateFormat.format(track.trackTime.toLong())
+        trackName.text = track.trackName
+    }
+}
+
+interface OnTrackClickListener {
+    fun onTrackClick(track: Track)
+}
+
+class TracksAdapter( private val listener: OnTrackClickListener) :
+    RecyclerView.Adapter<TracksViewHolder>() {
+
+    private var tracksList: ArrayList<Track> = ArrayList()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.search_view, parent, false)
+        return TracksViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
+        holder.bind(tracksList[position])
+        holder.itemView.setOnClickListener {
+            listener.onTrackClick(tracksList[position])
+        }
+    }
+    fun updateData(newTracks: List<Track>) {
+        tracksList.clear()
+        tracksList.addAll(newTracks)
+    }
+
+    override fun getItemCount(): Int {
+        return tracksList.size
+    }
+}
+
+fun dpToPx(dp: Float, context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        context.resources.displayMetrics
+    ).toInt()
+}
