@@ -7,21 +7,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.example.playlistmaker.search.domain.models.Constants
 import com.example.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
-    private val mediaPlayerInteractor = Creator.getMediaInteractor()
-    private lateinit var playerViewModel: PlayerViewModel
+    private val playerViewModel by viewModel<PlayerViewModel>()
 
     private val dateFormat by lazy {
         SimpleDateFormat(
@@ -42,13 +40,7 @@ class PlayerActivity : AppCompatActivity() {
         }
         val track = intent.getParcelableExtra<Track>(Constants.SELECTED)
 
-        playerViewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getFactory(
-                mediaPlayerInteractor,
-                track?.previewUrl ?: ""
-            )
-        )[PlayerViewModel::class.java]
+        playerViewModel.setUrl(track?.previewUrl ?: "")
 
         binding.track.text = track?.trackName
         binding.trackOwner.text = track?.artistName
@@ -69,8 +61,12 @@ class PlayerActivity : AppCompatActivity() {
         binding.styleText.text = track.primaryGenreName
         binding.countryText.text = track.country
 
-        playerViewModel.observeShowToast().observe(this){
-            Toast.makeText(this@PlayerActivity, resources.getString(R.string.load_track_error), Toast.LENGTH_SHORT)
+        playerViewModel.observeShowToast().observe(this) {
+            Toast.makeText(
+                this@PlayerActivity,
+                resources.getString(R.string.load_track_error),
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
 

@@ -13,10 +13,10 @@ import com.example.playlistmaker.player.ui.PlayerState
 import com.example.playlistmaker.utils.livedata.SingleLiveEvent
 
 class PlayerViewModel(
-    private val mediaPlayerInteractor: MediaInteractor,
-    private val previewUrl: String
+    private val mediaPlayerInteractor: MediaInteractor
 ) : ViewModel() {
 
+    private lateinit var previewUrl: String
     private val uiHandler = Handler(Looper.getMainLooper())
 
     private val playerState = MutableLiveData<PlayerState>()
@@ -29,15 +29,18 @@ class PlayerViewModel(
         private const val UPDATE_TIME = 300L
 
         fun getFactory(
-            mediaPlayerInteractor: MediaInteractor, previewUrl: String
+            mediaPlayerInteractor: MediaInteractor
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 PlayerViewModel(
-                    mediaPlayerInteractor,
-                    previewUrl
+                    mediaPlayerInteractor
                 )
             }
         }
+    }
+
+    fun setUrl(url: String){
+        previewUrl = url
     }
 
     private val updateCurrentTimeRunnable = object : Runnable {

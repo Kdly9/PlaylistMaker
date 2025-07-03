@@ -3,16 +3,16 @@ package com.example.playlistmaker.settings.ui
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel by viewModel<SettingsViewModel>() { parametersOf(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,14 +24,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.toolbarBack.setNavigationOnClickListener {
             finish()
         }
-
-        settingsViewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory(
-                Creator.getSharingInteractor(this),
-                Creator.getThemeInteractor()
-            )
-        )[SettingsViewModel::class.java]
 
         settingsViewModel.observeMode().observe(this) {
             when (it) {
@@ -56,14 +48,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.shareButton.setOnClickListener {
-            settingsViewModel.shareApp()
+            settingsViewModel.shareApp(this)
         }
         binding.supportButton.setOnClickListener {
-            settingsViewModel.openSupport()
+            settingsViewModel.openSupport(this)
         }
 
         binding.userAgreement.setOnClickListener {
-            settingsViewModel.openTerms()
+            settingsViewModel.openTerms(this)
         }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, checked ->
