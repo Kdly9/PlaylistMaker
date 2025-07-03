@@ -1,12 +1,9 @@
 package com.example.playlistmaker.settings.ui.view_model
 
-import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.settings.domain.api.ThemeInteractor
 import com.example.playlistmaker.settings.ui.ThemeState
 import com.example.playlistmaker.sharing.domain.api.SharingInteractor
@@ -24,30 +21,16 @@ class SettingsViewModel(
         getTheme()
     }
 
-    companion object {
-        fun getFactory(
-            sharingInteractor: SharingInteractor,
-            themeInteractor: ThemeInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SettingsViewModel(
-                    sharingInteractor,
-                    themeInteractor
-                )
-            }
-        }
+    fun shareApp(context: Context) {
+        sharingInteractor.shareApp(context)
     }
 
-    fun shareApp(activity: Activity) {
-        sharingInteractor.shareApp(activity)
+    fun openSupport(context: Context) {
+        sharingInteractor.openSupport(context)
     }
 
-    fun openSupport(activity: Activity) {
-        sharingInteractor.openSupport(activity)
-    }
-
-    fun openTerms(activity: Activity) {
-        sharingInteractor.openTerms(activity)
+    fun openTerms(context: Context) {
+        sharingInteractor.openTerms(context)
     }
 
     fun isDarkModeTheme() {

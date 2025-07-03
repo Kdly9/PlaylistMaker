@@ -1,9 +1,9 @@
 package com.example.playlistmaker.sharing.domain.api
 
-import android.app.Activity
+import android.content.Context
 
 interface SharingInteractor {
-    fun shareApp(activity: Activity)
-    fun openTerms(activity: Activity)
-    fun openSupport(activity: Activity)
+    fun shareApp(context: Context)
+    fun openTerms(context: Context)
+    fun openSupport(context: Context)
 }

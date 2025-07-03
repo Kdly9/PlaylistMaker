@@ -1,26 +1,26 @@
 package com.example.playlistmaker.sharing.domain.impl
 
-import android.app.Activity
+import android.content.Context
 import com.example.playlistmaker.sharing.domain.StringProvider
 import com.example.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.example.playlistmaker.sharing.domain.api.SharingInteractor
 
 class SharingInteractorImpl(
-    private val externalNavigator: (Activity) -> ExternalNavigator,
+    private val externalNavigator: (Context) -> ExternalNavigator,
     private val stringProvider: StringProvider
 ) : SharingInteractor {
-    override fun shareApp(activity: Activity) {
-        externalNavigator(activity).shareLink(
+    override fun shareApp(context: Context) {
+        externalNavigator(context).shareLink(
             stringProvider.getShareLink(),
             stringProvider.getShareLinkLabel()
         )
     }
 
-    override fun openTerms(activity: Activity) {
-        externalNavigator(activity).openLink(stringProvider.getOpenLink())
+    override fun openTerms(context: Context) {
+        externalNavigator(context).openLink(stringProvider.getOpenLink())
     }
 
-    override fun openSupport(activity: Activity) {
-        externalNavigator(activity).openEmail(stringProvider.getMailData())
+    override fun openSupport(context: Context) {
+        externalNavigator(context).openEmail(stringProvider.getMailData())
     }
 }

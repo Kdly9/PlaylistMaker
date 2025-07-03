@@ -27,16 +27,6 @@ class PlayerViewModel(
 
     companion object {
         private const val UPDATE_TIME = 300L
-
-        fun getFactory(
-            mediaPlayerInteractor: MediaInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(
-                    mediaPlayerInteractor
-                )
-            }
-        }
     }
 
     fun setUrl(url: String){

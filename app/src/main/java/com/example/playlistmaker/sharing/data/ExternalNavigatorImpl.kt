@@ -1,12 +1,12 @@
 package com.example.playlistmaker.sharing.data
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.example.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.example.playlistmaker.sharing.domain.models.MailData
 
-class ExternalNavigatorImpl(private val activity: Activity) : ExternalNavigator {
+class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
     override fun shareLink(link: String, label: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
@@ -16,7 +16,7 @@ class ExternalNavigatorImpl(private val activity: Activity) : ExternalNavigator 
         )
         val chooser = Intent.createChooser(shareIntent, label)
         try {
-            activity.startActivity(chooser)
+            context.startActivity(chooser)
         } catch (_: RuntimeException) {
 
         }
@@ -25,7 +25,7 @@ class ExternalNavigatorImpl(private val activity: Activity) : ExternalNavigator 
     override fun openLink(link: String) {
         val showIntent = Intent(Intent.ACTION_VIEW)
         showIntent.data = Uri.parse(link)
-        activity.startActivity(showIntent)
+        context.startActivity(showIntent)
     }
 
     override fun openEmail(data: MailData) {
@@ -40,6 +40,6 @@ class ExternalNavigatorImpl(private val activity: Activity) : ExternalNavigator 
             Intent.EXTRA_SUBJECT,
             data.topic
         )
-        activity.startActivity(supportIntent)
+        context.startActivity(supportIntent)
     }
 }
