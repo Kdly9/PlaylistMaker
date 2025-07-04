@@ -48,14 +48,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.shareButton.setOnClickListener {
-            settingsViewModel.shareApp(this)
+            settingsViewModel.shareApp()
         }
         binding.supportButton.setOnClickListener {
-            settingsViewModel.openSupport(this)
+            settingsViewModel.openSupport()
         }
 
         binding.userAgreement.setOnClickListener {
-            settingsViewModel.openTerms(this)
+            settingsViewModel.openTerms()
         }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, checked ->

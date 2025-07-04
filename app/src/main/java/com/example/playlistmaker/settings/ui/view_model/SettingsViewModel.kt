@@ -21,16 +21,16 @@ class SettingsViewModel(
         getTheme()
     }
 
-    fun shareApp(context: Context) {
-        sharingInteractor.shareApp(context)
+    fun shareApp() {
+        sharingInteractor.shareApp()
     }
 
-    fun openSupport(context: Context) {
-        sharingInteractor.openSupport(context)
+    fun openSupport() {
+        sharingInteractor.openSupport()
     }
 
-    fun openTerms(context: Context) {
-        sharingInteractor.openTerms(context)
+    fun openTerms() {
+        sharingInteractor.openTerms()
     }
 
     fun isDarkModeTheme() {
