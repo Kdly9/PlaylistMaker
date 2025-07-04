@@ -1,6 +1,7 @@
 package com.example.playlistmaker.search.data.storage
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.example.playlistmaker.search.data.dto.TrackDto
 import com.google.gson.Gson
@@ -8,12 +9,11 @@ import com.google.gson.reflect.TypeToken
 
 private const val TRACKS_HISTORY_KEY = "tracks_history"
 
-class SharedPrefsTrackStorage(context: Context) : TrackStorage {
-    private val sharedPreferences =
-        context.getSharedPreferences(TRACKS_HISTORY_KEY, Context.MODE_PRIVATE)
+class SharedPrefsTrackStorage(private val sharedPreferences: SharedPreferences,
+                              private val gson: Gson) : TrackStorage {
 
     override fun saveTracks(tracks: List<TrackDto>) {
-        val json = Gson().toJson(tracks)
+        val json = gson.toJson(tracks)
         sharedPreferences.edit() {
             putString(TRACKS_HISTORY_KEY, json)
         }

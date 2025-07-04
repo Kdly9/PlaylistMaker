@@ -1,14 +1,12 @@
 package com.example.playlistmaker.settings.data.storage
 
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
 
-const val SETTINGS_PREFERENCES = "playlist_maker_prefs"
+
 const val DARK_THEME_KEY = "dark_theme_enabled"
 
-class SharedPrefsThemeStorage(context: Context) : ThemeStorage {
-    private val sharedPreferences =
-        context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE)
+class SharedPrefsThemeStorage(private val sharedPreferences: SharedPreferences) : ThemeStorage {
 
     override fun setDarkTheme(enabled: Boolean) {
         sharedPreferences.edit {

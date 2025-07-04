@@ -12,36 +12,30 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Constants
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
-import com.example.playlistmaker.player.ui.PlayerActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
 
-    private val trackInteractor = Creator.provideTrackInteractor()
-    private val tracksHistoryInteractor by lazy(LazyThreadSafetyMode.NONE) {
-        Creator.getTracksHistoryRepositoryInteractor()
-    }
-
     private lateinit var playerActivityResultLauncher: ActivityResultLauncher<Intent>
 
     private val tracksAdapter = TracksAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: Track) {
             if (clickDebounce()) {
-               searchViewModel.onTrackClick(track)
+                searchViewModel.onTrackClick(track)
             }
         }
     })
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchViewModel: SearchViewModel
+    private val searchViewModel by viewModel<SearchViewModel>()
 
     @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,19 +43,11 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        searchViewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getFactory(
-                trackInteractor,
-                tracksHistoryInteractor
-            )
-        )[SearchViewModel::class.java]
-
         binding.toolbar.setOnClickListener {
             finish()
         }
 
-        searchViewModel.observeRunPlayer().observe(this){
+        searchViewModel.observeRunPlayer().observe(this) {
             val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
                 putExtra(Constants.SELECTED, it)
             }
@@ -89,6 +75,7 @@ class SearchActivity : AppCompatActivity() {
                     tracksAdapter.notifyDataSetChanged()
                     showErrorConnection(true)
                 }
+
                 TracksState.Loading -> {
                     hideHistory()
                     showErrorConnection(false)
