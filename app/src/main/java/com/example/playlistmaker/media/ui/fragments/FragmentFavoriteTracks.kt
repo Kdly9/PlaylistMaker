@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.playlistmaker.databinding.FragmentFavoriteTracksBinding
-import androidx.core.os.bundleOf
 
-class FragmentFavoriteTracks: Fragment()  {
+class FragmentFavoriteTracks : Fragment() {
 
     private var _binding: FragmentFavoriteTracksBinding? = null
     private val binding get() = _binding!!
@@ -28,4 +27,12 @@ class FragmentFavoriteTracks: Fragment()  {
         binding.emptyLib.visibility = View.VISIBLE
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance() = FragmentFavoriteTracks()
+    }
 }

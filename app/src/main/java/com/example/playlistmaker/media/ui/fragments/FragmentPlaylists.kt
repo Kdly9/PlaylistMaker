@@ -25,4 +25,13 @@ class FragmentPlaylists : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.emptyLists.visibility = View.VISIBLE
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance() = FragmentPlaylists()
+    }
 }

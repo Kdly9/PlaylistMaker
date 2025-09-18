@@ -13,6 +13,6 @@ class PagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        return if (position == 0) FragmentFavoriteTracks() else FragmentPlaylists()
+        return if (position == 0) FragmentFavoriteTracks.newInstance() else FragmentPlaylists.newInstance()
     }
 }
