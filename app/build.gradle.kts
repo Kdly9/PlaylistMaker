@@ -1,4 +1,4 @@
-plugins {
+    plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
@@ -49,9 +49,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.glide)
-    annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
-    implementation ("com.google.code.gson:gson:2.10")
+    annotationProcessor(libs.compiler)
+    implementation (libs.gson)
     implementation (libs.retrofit)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("io.insert-koin:koin-android:3.3.0")
+    implementation (libs.converter.gson)
+    implementation (libs.koin.android)
+    implementation (libs.androidx.viewpager2)
 }

@@ -2,6 +2,7 @@ package com.example.playlistmaker.settings.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.media.di.mediaLibraryViewModelModule
 import com.example.playlistmaker.player.di.playerDataModule
 import com.example.playlistmaker.player.di.playerInteractorModule
 import com.example.playlistmaker.player.di.playerViewModelModule
@@ -40,7 +41,8 @@ class App : Application() {
                 sharingDataModule,
                 playerInteractorModule,
                 playerDataModule,
-                playerViewModelModule
+                playerViewModelModule,
+                mediaLibraryViewModelModule
             )
         }
 
