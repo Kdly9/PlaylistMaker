@@ -2,30 +2,31 @@ package com.example.playlistmaker.settings.ui
 
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.playlistmaker.databinding.FragmentSettingsBinding
+import com.example.playlistmaker.root.ui.RootActivity
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-
-class SettingsActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivitySettingsBinding
+class SettingsFragment : Fragment() {
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
     private val settingsViewModel by viewModel<SettingsViewModel>() { parametersOf(this) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbarBack.setNavigationOnClickListener {
-            finish()
-        }
-
-        settingsViewModel.observeMode().observe(this) {
+        settingsViewModel.observeMode().observe(viewLifecycleOwner) {
             when (it) {
                 ThemeState.NoSavedParams -> {
                     val currentNightMode =
@@ -60,7 +61,12 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.themeSwitch.setOnCheckedChangeListener { _, checked ->
             settingsViewModel.enableDarkMode(checked)
-            (application as App).switchTheme(checked)
+            (requireActivity() as RootActivity).switchTheme(checked)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

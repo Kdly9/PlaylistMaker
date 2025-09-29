@@ -5,11 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".media.MediaLibraryActivity">
+    tools:context=".media.ui.fragments.MediaLibraryFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/ToolbarStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_title"
         android:background="?attr/colorSecondary"

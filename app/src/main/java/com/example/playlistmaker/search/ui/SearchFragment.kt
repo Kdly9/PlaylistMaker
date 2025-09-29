@@ -1,26 +1,35 @@
 package com.example.playlistmaker.search.ui
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
-import com.example.playlistmaker.search.domain.models.Constants
+import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+
+    private val searchViewModel by viewModel<SearchViewModel>()
 
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
@@ -34,27 +43,27 @@ class SearchActivity : AppCompatActivity() {
             }
         }
     })
-    private lateinit var binding: ActivitySearchBinding
-    private val searchViewModel by viewModel<SearchViewModel>()
 
-    @SuppressLint("CutPasteId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
-        binding.toolbar.setOnClickListener {
-            finish()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        searchViewModel.observeRunPlayer().observe(viewLifecycleOwner) {
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(it)
+            )
         }
 
-        searchViewModel.observeRunPlayer().observe(this) {
-            val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
-                putExtra(Constants.SELECTED, it)
-            }
-            playerActivityResultLauncher.launch(playerIntent)
-        }
-
-        searchViewModel.observeSearchState().observe(this) {
+        searchViewModel.observeSearchState().observe(viewLifecycleOwner) {
             when (it) {
                 is TracksState.Content -> {
                     tracksAdapter.updateData(it.tracks)
@@ -105,7 +114,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = tracksAdapter
 
         binding.clearIcon.setOnClickListener {
@@ -115,7 +124,8 @@ class SearchActivity : AppCompatActivity() {
             searchViewModel.showHistory(true)
             showErrorData(false)
             showErrorConnection(false)
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
         }
 
@@ -194,5 +204,10 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

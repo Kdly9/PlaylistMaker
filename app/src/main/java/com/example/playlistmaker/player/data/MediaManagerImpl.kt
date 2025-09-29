@@ -7,6 +7,7 @@ class MediaManagerImpl(private val mediaPlayer: MediaPlayer) : MediaManager {
 
     override fun preparePlayer(url: String) {
         mediaPlayer.apply {
+            reset()
             setDataSource(url)
             prepareAsync()
         }
@@ -22,6 +23,10 @@ class MediaManagerImpl(private val mediaPlayer: MediaPlayer) : MediaManager {
 
     override fun release() {
         mediaPlayer.release()
+    }
+
+    override fun reset() {
+        mediaPlayer.reset()
     }
 
     override fun getCurrentPosition(): Int {
