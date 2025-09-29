@@ -40,8 +40,8 @@ class MediaLibraryFragment : Fragment() {
         tabLayoutMediator.attach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         tabLayoutMediator.detach()
         _binding = null
     }
