@@ -5,6 +5,7 @@ interface MediaInteractor {
     fun startPlayer()
     fun pausePlayer()
     fun release()
+    fun reset()
     fun playbackControl()
     fun getCurrentPosition(): Int
     fun setUpdateCurrentTimeListener(listener: (String) -> Unit)

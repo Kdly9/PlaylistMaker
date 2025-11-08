@@ -81,4 +81,13 @@ class PlayerViewModel(
         mediaPlayerInteractor.release()
     }
 
+    fun onReset() {
+        mediaPlayerInteractor.reset()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        uiHandler.removeCallbacks(updateCurrentTimeRunnable)
+    }
+
 }

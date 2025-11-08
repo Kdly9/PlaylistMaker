@@ -18,26 +18,37 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
                 playerState = STATE_PREPARED
                 listener.completionAction()
             }
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            ex.printStackTrace()
             playerState = STATE_ERROR
             listener.errorPrepare()
         }
     }
 
     override fun startPlayer() {
-        mediaManager.startPlayer()
-        listener.startPlayer()
-        playerState = STATE_PLAYING
+        if (playerState != STATE_ERROR) {
+            mediaManager.startPlayer()
+            listener.startPlayer()
+            playerState = STATE_PLAYING
+        }
     }
 
     override fun pausePlayer() {
-        mediaManager.pausePlayer()
-        listener.pausePlayer()
-        playerState = STATE_PAUSED
+        if (playerState != STATE_ERROR) {
+            if (playerState == STATE_PLAYING) {
+                mediaManager.pausePlayer()
+                listener.pausePlayer()
+                playerState = STATE_PAUSED
+            }
+        }
     }
 
     override fun release() {
         mediaManager.release()
+    }
+
+    override fun reset() {
+        mediaManager.reset()
     }
 
     override fun playbackControl() {
