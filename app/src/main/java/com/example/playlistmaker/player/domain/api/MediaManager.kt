@@ -8,6 +8,7 @@ interface MediaManager {
     fun pausePlayer()
     fun release()
     fun reset()
+    fun isPlaying(): Boolean
     fun getCurrentPosition(): Int
     fun setOnPreparedListener(listener: MediaPlayer.OnPreparedListener)
     fun setOnCompletionListener(listener: MediaPlayer.OnCompletionListener)
