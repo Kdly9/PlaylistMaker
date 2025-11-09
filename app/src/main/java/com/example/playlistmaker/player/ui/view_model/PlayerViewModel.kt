@@ -34,6 +34,7 @@ class PlayerViewModel(
     }
 
     private fun startTimer() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayerInteractor.mediaIsPlaying()) {
                 delay(UPDATE_TIME)
