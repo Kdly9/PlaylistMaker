@@ -76,6 +76,10 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
         this.updateCurrentTimeListener = listener
     }
 
+    override fun mediaIsPlaying(): Boolean {
+        return mediaManager.isPlaying()
+    }
+
     companion object {
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1

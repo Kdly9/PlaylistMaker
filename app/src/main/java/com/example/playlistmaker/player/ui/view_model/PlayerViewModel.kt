@@ -1,23 +1,23 @@
 package com.example.playlistmaker.player.ui.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.player.domain.api.MediaInteractor
 import com.example.playlistmaker.player.ui.PlayerState
 import com.example.playlistmaker.utils.livedata.SingleLiveEvent
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val mediaPlayerInteractor: MediaInteractor
 ) : ViewModel() {
 
     private lateinit var previewUrl: String
-    private val uiHandler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
+
 
     private val playerState = MutableLiveData<PlayerState>()
     fun observePlayerState(): LiveData<PlayerState> = playerState
@@ -29,16 +29,16 @@ class PlayerViewModel(
         private const val UPDATE_TIME = 300L
     }
 
-    fun setUrl(url: String){
+    fun setUrl(url: String) {
         previewUrl = url
     }
 
-    private val updateCurrentTimeRunnable = object : Runnable {
-        override fun run() {
-            val state = playerState.value
-            if (state is PlayerState.Start) {
-                uiHandler.postDelayed(this, UPDATE_TIME)
-                playerState.postValue(state.copy(currentPosition = mediaPlayerInteractor.getCurrentPosition()))
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (mediaPlayerInteractor.mediaIsPlaying()) {
+                delay(UPDATE_TIME)
+                playerState.postValue(PlayerState.Start(currentPosition = mediaPlayerInteractor.getCurrentPosition()))
             }
         }
     }
@@ -46,8 +46,8 @@ class PlayerViewModel(
     fun preparePlayer() {
         mediaPlayerInteractor.preparePlayer(previewUrl, object : MediaInteractor.Completion {
             override fun completionAction() {
-                uiHandler.removeCallbacks(updateCurrentTimeRunnable)
                 playerState.postValue(PlayerState.CompletionAction)
+                timerJob?.cancel()
             }
 
             override fun errorPrepare() {
@@ -59,12 +59,12 @@ class PlayerViewModel(
             }
 
             override fun pausePlayer() {
-                uiHandler.removeCallbacks(updateCurrentTimeRunnable)
+                timerJob?.cancel()
                 playerState.postValue(PlayerState.Paused)
             }
 
             override fun paused() {
-                uiHandler.post(updateCurrentTimeRunnable)
+                startTimer()
             }
         })
     }
@@ -85,9 +85,5 @@ class PlayerViewModel(
         mediaPlayerInteractor.reset()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        uiHandler.removeCallbacks(updateCurrentTimeRunnable)
-    }
 
 }

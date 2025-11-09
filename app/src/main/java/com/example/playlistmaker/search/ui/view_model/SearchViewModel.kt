@@ -1,26 +1,21 @@
 package com.example.playlistmaker.search.ui.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.TracksState
+import com.example.playlistmaker.utils.debounce
 import com.example.playlistmaker.utils.livedata.SingleLiveEvent
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TracksInteractor,
     private val tracksHistoryInteractor: TracksHistoryInteractor
 ) : ViewModel() {
-
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { itunesResponse() }
 
     private val searchState = MutableLiveData<TracksState>()
     fun observeSearchState(): LiveData<TracksState> = searchState
@@ -29,6 +24,11 @@ class SearchViewModel(
     fun observeRunPlayer(): LiveData<Track> = runPlayer
 
     private var lastText = ""
+    private val onSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { text ->
+            itunesResponse(text)
+        }
+
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -46,38 +46,51 @@ class SearchViewModel(
         tracksHistory.add(0, track)
         tracksHistoryInteractor.saveHistory(tracksHistory)
 
-        runPlayer.postValue(track) }
-
-    fun updateSearch() {
-        itunesResponse()
+        runPlayer.postValue(track)
     }
 
-    private fun itunesResponse() {
-        if (lastText.isNotEmpty()) {
+    fun updateSearch() {
+        itunesResponse(lastText)
+    }
+
+    private fun itunesResponse(text: String) {
+        if (text.isNotEmpty()) {
 
             searchState.postValue(TracksState.Loading)
-            trackInteractor.searchTracks(lastText, object : TracksInteractor.TracksConsumer {
-                override fun consume(foundTracks: List<Track>) {
-                    searchState.postValue(TracksState.Content(emptyList()))
-                    if (foundTracks.isNotEmpty()) {
-                        searchState.postValue(TracksState.Content(foundTracks))
-                    } else {
-                        searchState.postValue(TracksState.Empty)
-                    }
-                }
 
-                override fun failure() {
-                    searchState.postValue(TracksState.Failure)
-                }
-            })
+            viewModelScope.launch {
+                trackInteractor
+                    .searchTracks(text)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
+                    }
+            }
+        }
+    }
+
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
+
+        when {
+            errorMessage != null -> {
+                searchState.postValue(TracksState.Failure)
+            }
+            tracks.isEmpty() -> {
+                searchState.postValue(TracksState.Empty)
+            }
+            else -> {
+                searchState.postValue(TracksState.Content(tracks))
+            }
         }
     }
 
     fun searchDebounce(newText: String) {
         if (newText != lastText) {
             lastText = newText
-            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+            onSearchDebounce(lastText)
         }
     }
 
@@ -93,10 +106,6 @@ class SearchViewModel(
         } else {
             searchState.postValue(TracksState.History(emptyList()))
         }
-    }
-
-    override fun onCleared() {
-        handler.removeCallbacks(searchRunnable)
     }
 
     fun onHistoryClear() {

@@ -1,12 +1,12 @@
 package com.example.playlistmaker.player.ui
 
-sealed class PlayerState {
+sealed interface PlayerState {
 
-    object CompletionAction : PlayerState()
+    data object CompletionAction : PlayerState
 
     data class Start(
         val currentPosition: Int
-    ) : PlayerState()
+    ) : PlayerState
 
-    object Paused : PlayerState()
+    data object Paused : PlayerState
 }

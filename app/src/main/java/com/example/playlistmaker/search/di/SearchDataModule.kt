@@ -29,7 +29,7 @@ val searchDataModule = module {
     factory { Gson() }
 
     single<NetworkClient> {
-        ItunesApiNetworkClient(get())
+        ItunesApiNetworkClient(get(), get())
     }
 
     single<TrackStorage> {

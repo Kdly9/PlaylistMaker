@@ -57,4 +57,5 @@ dependencies {
     implementation (libs.koin.android)
     implementation (libs.androidx.viewpager2)
     implementation (libs.androidx.navigation.ui.ktx)
+    implementation (libs.kotlinx.coroutines.android)
 }

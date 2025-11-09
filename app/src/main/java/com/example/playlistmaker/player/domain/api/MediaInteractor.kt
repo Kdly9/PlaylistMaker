@@ -9,6 +9,7 @@ interface MediaInteractor {
     fun playbackControl()
     fun getCurrentPosition(): Int
     fun setUpdateCurrentTimeListener(listener: (String) -> Unit)
+    fun mediaIsPlaying(): Boolean
     interface Completion {
         fun completionAction()
         fun errorPrepare()
