@@ -58,12 +58,14 @@ class PlayerFragment : Fragment() {
         }
         val track = arguments?.getParcelable<Track>(SELECTED_KEY)
 
-        playerViewModel.setUrl(track?.previewUrl ?: "")
+        if (track != null) {
+            playerViewModel.setTrack(track)
+        }
 
         binding.track.text = track?.trackName
         binding.trackOwner.text = track?.artistName
         binding.durationText.text =
-            dateFormat.format(track?.trackTime?.toLong())
+            dateFormat.format(track?.trackTimeMillis?.toLong())
 
         if (track?.collectionName!!.isEmpty()) {
             binding.albumTitle.visibility = View.GONE
@@ -78,6 +80,10 @@ class PlayerFragment : Fragment() {
 
         binding.styleText.text = track.primaryGenreName
         binding.countryText.text = track.country
+
+        binding.likeButton.setOnClickListener {
+            playerViewModel.onFavoriteClicked()
+        }
 
         playerViewModel.observeShowToast().observe(viewLifecycleOwner) {
             Toast.makeText(
@@ -107,6 +113,17 @@ class PlayerFragment : Fragment() {
                     binding.currentTime.text = dateFormat.format(it.currentPosition)
                     binding.playButton.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_pause)
+                }
+
+                is PlayerState.Favorite -> {
+                    if (it.isFavorite) {
+                        binding.likeButton.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_favourite)
+                    } else {
+                        binding.likeButton.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_like)
+
+                    }
                 }
             }
         }

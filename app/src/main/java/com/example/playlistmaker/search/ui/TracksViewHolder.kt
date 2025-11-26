@@ -28,7 +28,7 @@ class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
             .centerInside().transform(RoundedCorners(dpToPx(2f, context)))
             .into(trackImage)
         trackOwner.text = track.artistName
-        trackTime.text = dateFormat.format(track.trackTime.toLong())
+        trackTime.text = dateFormat.format(track.trackTimeMillis.toLong())
         trackName.text = track.trackName
     }
 }
