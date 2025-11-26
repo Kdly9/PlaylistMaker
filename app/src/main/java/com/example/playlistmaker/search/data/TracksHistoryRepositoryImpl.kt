@@ -1,11 +1,12 @@
 package com.example.playlistmaker.search.data
 
+import com.example.playlistmaker.media.data.db.AppDataBase
 import com.example.playlistmaker.search.data.dto.TrackDto
 import com.example.playlistmaker.search.data.storage.TrackStorage
 import com.example.playlistmaker.search.domain.api.TracksHistoryRepository
 import com.example.playlistmaker.search.domain.models.Track
 
-class TracksHistoryRepositoryImpl(private val localStorage: TrackStorage) :
+class TracksHistoryRepositoryImpl(private val localStorage: TrackStorage, private val appDatabase: AppDataBase) :
     TracksHistoryRepository {
 
     override fun saveTracks(saveTracks: List<Track>) {
@@ -25,7 +26,7 @@ class TracksHistoryRepositoryImpl(private val localStorage: TrackStorage) :
             track.trackId,
             track.trackName,
             track.artistName,
-            track.trackTime,
+            track.trackTimeMillis,
             track.artworkUrl100,
             track.collectionName,
             track.releaseDate,

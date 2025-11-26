@@ -8,7 +8,7 @@ import com.example.playlistmaker.media.view_model.PlaylistsViewModel
 
 val mediaLibraryViewModelModule = module {
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(get())
     }
 
     viewModel {
