@@ -21,7 +21,8 @@ class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(item: Playlist, loadImage: (String) -> Bitmap?) {
         playlistName.text = item.name
-        tracksNumbers.text = convertText(item.tracksCount)
+        tracksNumbers.text =
+            context.resources.getQuantityString(R.plurals.track, item.tracksCount, item.tracksCount)
 
         when {
             !item.imagePath.isNullOrEmpty() -> {
@@ -44,15 +45,5 @@ class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .load(R.drawable.mock_image)
             .centerCrop()
             .into(playlistPoster)
-    }
-
-
-    private fun convertText(count: Int): String {
-        return when {
-            count % 100 in 11..14 -> context.getString(R.string.track_count_plural, count)
-            count % 10 == 1 -> context.getString(R.string.track_count_singular, count)
-            count % 10 in 2..4 -> context.getString(R.string.track_count_few, count)
-            else -> context.getString(R.string.track_count_plural, count)
-        }
     }
 }

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -50,8 +51,8 @@ class FragmentPlaylists : Fragment() {
 
         viewModel.observePlaylists.observe(viewLifecycleOwner) { playlists ->
             adapter.submitList(playlists)
-            binding.emptyLists.visibility = if (playlists.isEmpty()) View.VISIBLE else View.GONE
-            binding.recyclerView.visibility = if (playlists.isEmpty()) View.GONE else View.VISIBLE
+            binding.emptyLists.isVisible = playlists.isEmpty()
+            binding.recyclerView.isVisible = playlists.isNotEmpty()
         }
     }
 

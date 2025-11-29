@@ -112,7 +112,7 @@
             android:layout_width="0dp"
             android:layout_height="44dp"
             android:layout_marginHorizontal="17dp"
-            android:layout_marginTop="162dp"
+            android:layout_marginTop="172dp"
             android:background="@drawable/create_button_bg"
             android:enabled="false"
             android:fontFamily="@font/ys_display_medium"

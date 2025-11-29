@@ -61,7 +61,7 @@ class FragmentNewPlaylist : Fragment() {
         }
 
         binding.playlistNameEditText.doOnTextChanged { text, _, _, _ ->
-            binding.createButton.isEnabled = !text.isNullOrEmpty()
+            binding.createButton.isEnabled = !text?.trim().isNullOrEmpty()
             if (text != null && text.endsWith("\n")) {
                 val cursorPosition = binding.playlistNameEditText.selectionStart
                 binding.playlistNameEditText.setText(text.substring(0, text.length - 1))
@@ -127,43 +127,43 @@ class FragmentNewPlaylist : Fragment() {
 
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                if (uri != null) {
-                    Glide.with(this)
-                        .load(uri)
-                        .transform(CenterCrop(), RoundedCorners(dpToPx(8f, requireContext())))
-                        .into(binding.imagePlaylist)
-                    binding.icon.isVisible = false
-                    imageUri = uri
-                }
+                if (uri == null) return@registerForActivityResult
+                Glide.with(this)
+                    .load(uri)
+                    .transform(CenterCrop(), RoundedCorners(dpToPx(8f, requireContext())))
+                    .into(binding.imagePlaylist)
+                binding.icon.isVisible = false
+                imageUri = uri
+
             }
         binding.imagePlaylist.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         binding.createButton.setOnClickListener {
-            if (playlistName.isNotBlank()) {
-                val savedImagePath = imageUri?.let { uri ->
-                    saveImageToInternalStorage(requireContext(), uri)
-                }
-
-                val newPlaylist = Playlist(
-                    id = 0,
-                    name = playlistName,
-                    description = playlistDescription,
-                    imagePath = savedImagePath,
-                    trackIds = emptyList(),
-                    tracksCount = 0
-                )
-
-                newPlaylistViewModel.savePlaylist(newPlaylist)
-                val message = getString(R.string.playlist_created_message, playlistName)
-                Toast.makeText(
-                    requireContext(),
-                    message,
-                    Toast.LENGTH_SHORT
-                ).show()
-                findNavController().navigateUp()
+            if (playlistName.isBlank()) return@setOnClickListener
+            val savedImagePath = imageUri?.let { uri ->
+                saveImageToInternalStorage(requireContext(), uri)
             }
+
+            val newPlaylist = Playlist(
+                id = 0,
+                name = playlistName,
+                description = playlistDescription,
+                imagePath = savedImagePath,
+                trackIds = emptyList(),
+                tracksCount = 0
+            )
+
+            newPlaylistViewModel.savePlaylist(newPlaylist)
+            val message = getString(R.string.playlist_created_message, playlistName)
+            Toast.makeText(
+                requireContext(),
+                message,
+                Toast.LENGTH_SHORT
+            ).show()
+            findNavController().navigateUp()
+
         }
     }
 

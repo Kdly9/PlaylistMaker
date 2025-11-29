@@ -17,5 +17,6 @@
     <color name="list_color">#AEAFB4</color>
     <color name="bottom_sheet_bg">#E6E8EB</color>
     <color name="text_color">#FFFFFFFF</color>
+    <color name="stroke_color">#AEAFB4</color>
 
 </resources>
