@@ -1,16 +1,26 @@
 package com.example.playlistmaker.media.ui.fragments
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.example.playlistmaker.media.ui.PlaylistsAdapter
+import com.example.playlistmaker.media.view_model.PlaylistsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FragmentPlaylists : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: PlaylistsAdapter
+    private val viewModel by viewModel<PlaylistsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,6 +34,37 @@ class FragmentPlaylists : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.emptyLists.visibility = View.VISIBLE
+        binding.createPlaylist.setOnClickListener {
+            parentFragment?.findNavController()?.navigate(
+                R.id.action_mediaLibraryFragment_to_fragmentNewPlaylist,
+            )
+        }
+
+        adapter = PlaylistsAdapter(
+            onPlaylistClick = {
+            },
+            loadImage = { path -> loadImageFromInternalStorage(requireContext(), path) }
+        )
+
+        binding.recyclerView.adapter = adapter
+
+        viewModel.observePlaylists.observe(viewLifecycleOwner) { playlists ->
+            adapter.submitList(playlists)
+            binding.emptyLists.visibility = if (playlists.isEmpty()) View.VISIBLE else View.GONE
+            binding.recyclerView.visibility = if (playlists.isEmpty()) View.GONE else View.VISIBLE
+        }
+    }
+
+
+    private fun loadImageFromInternalStorage(context: Context, path: String?): Bitmap? {
+        if (path.isNullOrEmpty()) return null
+
+        return try {
+            BitmapFactory.decodeFile(path)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     override fun onDestroyView() {

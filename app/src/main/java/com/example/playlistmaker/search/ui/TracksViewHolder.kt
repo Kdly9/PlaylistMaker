@@ -1,8 +1,6 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context
 import android.icu.text.SimpleDateFormat
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.utils.dpToPx
 import java.util.Locale
 
 class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
@@ -25,7 +25,7 @@ class TracksViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
 
     fun bind(track: Track) {
         Glide.with(context).load(track.artworkUrl100).placeholder(R.drawable.mock_image)
-            .centerInside().transform(RoundedCorners(dpToPx(2f, context)))
+            .transform(CenterCrop(), RoundedCorners(dpToPx(2f, context)))
             .into(trackImage)
         trackOwner.text = track.artistName
         trackTime.text = dateFormat.format(track.trackTimeMillis.toLong())
@@ -37,7 +37,7 @@ interface OnTrackClickListener {
     fun onTrackClick(track: Track)
 }
 
-class TracksAdapter( private val listener: OnTrackClickListener) :
+class TracksAdapter(private val listener: OnTrackClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {
 
     private var tracksList: ArrayList<Track> = ArrayList()
@@ -53,6 +53,7 @@ class TracksAdapter( private val listener: OnTrackClickListener) :
             listener.onTrackClick(tracksList[position])
         }
     }
+
     fun updateData(newTracks: List<Track>) {
         tracksList.clear()
         tracksList.addAll(newTracks)
@@ -61,12 +62,4 @@ class TracksAdapter( private val listener: OnTrackClickListener) :
     override fun getItemCount(): Int {
         return tracksList.size
     }
-}
-
-fun dpToPx(dp: Float, context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        context.resources.displayMetrics
-    ).toInt()
 }
