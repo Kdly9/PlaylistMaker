@@ -33,9 +33,7 @@ class SearchFragment : Fragment() {
     private val searchViewModel by viewModel<SearchViewModel>()
 
     private lateinit var playerActivityResultLauncher: ActivityResultLauncher<Intent>
-
     private lateinit var onTrackClickDebounce: (Track) -> Unit
-
 
     private val tracksAdapter = TracksAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: Track) {
@@ -66,6 +64,9 @@ class SearchFragment : Fragment() {
                 PlayerFragment.createArgs(it)
             )
         }
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = tracksAdapter
 
         searchViewModel.observeSearchState().observe(viewLifecycleOwner) {
             when (it) {
@@ -118,11 +119,9 @@ class SearchFragment : Fragment() {
             }
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = tracksAdapter
-
         binding.clearIcon.setOnClickListener {
             binding.search.text?.clear()
+            searchViewModel.clearCurrentSearchText()
             tracksAdapter.updateData(emptyList())
             tracksAdapter.notifyDataSetChanged()
             searchViewModel.showHistory(true)
@@ -141,6 +140,7 @@ class SearchFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrEmpty()) {
                     binding.clearIcon.visibility = View.GONE
+                    searchViewModel.clearCurrentSearchText()
                 } else {
                     searchViewModel.searchDebounce(s.toString())
                     binding.clearIcon.visibility = View.VISIBLE
@@ -165,6 +165,14 @@ class SearchFragment : Fragment() {
         binding.clearHistory.setOnClickListener {
             searchViewModel.onHistoryClear()
         }
+
+        searchViewModel.restoreSearchState()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
     private fun hideHistory() {

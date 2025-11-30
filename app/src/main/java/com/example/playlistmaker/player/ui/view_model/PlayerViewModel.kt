@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.media.domain.api.FavoritesTracksInteractor
+import com.example.playlistmaker.media.domain.api.PlaylistInteractor
+import com.example.playlistmaker.media.domain.model.Playlist
 import com.example.playlistmaker.player.domain.api.MediaInteractor
 import com.example.playlistmaker.player.ui.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val mediaPlayerInteractor: MediaInteractor,
-    private val favouritesTracksInteractor: FavoritesTracksInteractor
+    private val favouritesTracksInteractor: FavoritesTracksInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private var track: Track? = null
@@ -28,6 +31,12 @@ class PlayerViewModel(
     private val showToast = SingleLiveEvent<Boolean>()
     fun observeShowToast(): LiveData<Boolean> = showToast
 
+    private val playlistStat = MutableLiveData<PlaylistState>()
+    fun observePlaylistStat(): LiveData<PlaylistState> = playlistStat
+
+    private val playlists = MutableLiveData<List<Playlist>>()
+    fun observePlaylists(): LiveData<List<Playlist>> = playlists
+
     companion object {
         private const val UPDATE_TIME = 300L
     }
@@ -35,6 +44,12 @@ class PlayerViewModel(
     fun setTrack(track: Track) {
         this.track = track
         isFavourite()
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            playlists.value = playlistInteractor.getPlaylists()
+        }
     }
 
     fun onFavoriteClicked() {
@@ -76,6 +91,17 @@ class PlayerViewModel(
             while (mediaPlayerInteractor.mediaIsPlaying()) {
                 delay(UPDATE_TIME)
                 playerState.postValue(PlayerState.Start(currentPosition = mediaPlayerInteractor.getCurrentPosition()))
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(track: Track, playlist: Playlist) {
+        viewModelScope.launch {
+            if (playlist.trackIds.contains(track.trackId)) {
+                playlistStat.postValue(PlaylistState.Exist(name = playlist.name))
+            } else {
+                playlistInteractor.addTrackToPlaylist(track, playlist)
+                playlistStat.postValue(PlaylistState.Added(playlist.name))
             }
         }
     }
@@ -126,5 +152,9 @@ class PlayerViewModel(
         mediaPlayerInteractor.reset()
     }
 
+    sealed interface PlaylistState {
+        data class Exist(val name: String) : PlaylistState
+        data class Added(val name: String) : PlaylistState
+    }
 
 }

@@ -29,6 +29,12 @@ class SearchViewModel(
             itunesResponse(text)
         }
 
+    private var currentSearchText: String = ""
+
+
+    fun clearCurrentSearchText() {
+        currentSearchText = ""
+    }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -78,9 +84,11 @@ class SearchViewModel(
             errorMessage != null -> {
                 searchState.postValue(TracksState.Failure)
             }
+
             tracks.isEmpty() -> {
                 searchState.postValue(TracksState.Empty)
             }
+
             else -> {
                 searchState.postValue(TracksState.Content(tracks))
             }
@@ -90,7 +98,16 @@ class SearchViewModel(
     fun searchDebounce(newText: String) {
         if (newText != lastText) {
             lastText = newText
+            currentSearchText = newText
             onSearchDebounce(lastText)
+        }
+    }
+
+    fun restoreSearchState() {
+        if (currentSearchText.isNotEmpty()) {
+            onSearchDebounce(currentSearchText)
+        } else {
+            showHistory(true)
         }
     }
 

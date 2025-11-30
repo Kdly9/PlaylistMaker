@@ -1,22 +1,25 @@
 package com.example.playlistmaker.player.ui
 
-import android.content.Context
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.utils.dpToPx
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -26,6 +29,9 @@ class PlayerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val playerViewModel by viewModel<PlayerViewModel>()
+
+    private lateinit var playlistsBottomSheetAdapter: PlaylistsBottomSheetAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     private val dateFormat by lazy {
         SimpleDateFormat(
@@ -41,6 +47,30 @@ class PlayerFragment : Fragment() {
         fun createArgs(key: Track): Bundle = bundleOf(SELECTED_KEY to key)
     }
 
+    private fun initPlaylistsAdapter(track: Track) {
+        playlistsBottomSheetAdapter = PlaylistsBottomSheetAdapter(
+            onPlaylistClickListener = { playlist ->
+                playerViewModel.addTrackToPlaylist(track, playlist)
+            },
+            loadImage = { path ->
+                try {
+                    Glide.with(requireContext())
+                        .asBitmap()
+                        .load(path)
+                        .submit()
+                        .get()
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        )
+        binding.recyclerView.apply {
+            adapter = playlistsBottomSheetAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,6 +82,7 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.playerToolbar.setOnClickListener {
             //setResult(RESULT_OK)
             findNavController().navigateUp()
@@ -60,6 +91,7 @@ class PlayerFragment : Fragment() {
 
         if (track != null) {
             playerViewModel.setTrack(track)
+            initPlaylistsAdapter(track)
         }
 
         binding.track.text = track?.trackName
@@ -84,6 +116,52 @@ class PlayerFragment : Fragment() {
         binding.likeButton.setOnClickListener {
             playerViewModel.onFavoriteClicked()
         }
+
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            peekHeight = 0
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
+                        else -> binding.overlay.visibility = View.VISIBLE
+                    }
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        playerViewModel.loadPlaylists()
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                }
+            })
+        }
+
+        binding.overlay.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.addButton.setOnClickListener {
+            playerViewModel.loadPlaylists()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+
+        binding.createPlaylistButton.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_fragmentNewPlaylist)
+                .also {
+                    findNavController().currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.getLiveData<Boolean>("playlist_created")
+                        ?.observe(viewLifecycleOwner) { created ->
+                            if (created) {
+                                playerViewModel.loadPlaylists()
+                            }
+                        }
+                }
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
 
         playerViewModel.observeShowToast().observe(viewLifecycleOwner) {
             Toast.makeText(
@@ -128,24 +206,42 @@ class PlayerFragment : Fragment() {
             }
         }
 
+        playerViewModel.observePlaylistStat().observe(viewLifecycleOwner) {
+            when (it) {
+                is PlayerViewModel.PlaylistState.Added -> {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.track_added_to_playlist, it.name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    playerViewModel.loadPlaylists()
+                }
+
+                is PlayerViewModel.PlaylistState.Exist -> {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.track_already_added_to_playlist, it.name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.mock_image)
-            .centerInside().transform(RoundedCorners(dpToPx(8f, requireContext())))
+            .transform(CenterCrop(), RoundedCorners(dpToPx(8f, requireContext())))
             .into(binding.image)
 
         binding.playButton.setOnClickListener {
             playerViewModel.playbackControl()
         }
 
-    }
+        playerViewModel.observePlaylists().observe(viewLifecycleOwner) { playlists ->
+            playlistsBottomSheetAdapter.playlists = playlists
+        }
 
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics
-        ).toInt()
     }
 
     override fun onPause() {
