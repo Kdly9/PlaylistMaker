@@ -42,7 +42,11 @@ class FragmentPlaylists : Fragment() {
         }
 
         adapter = PlaylistsAdapter(
-            onPlaylistClick = {
+            onPlaylistClick = { playlist ->
+                findNavController().navigate(
+                    R.id.action_mediaLibraryFragment_to_fragmentPlaylistList,
+                    FragmentPlaylistList.createArgs(playlist.id)
+                )
             },
             loadImage = { path -> loadImageFromInternalStorage(requireContext(), path) }
         )

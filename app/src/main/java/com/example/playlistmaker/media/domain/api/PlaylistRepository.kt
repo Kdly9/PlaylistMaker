@@ -17,4 +17,13 @@ interface PlaylistRepository {
     suspend fun deletePlaylistById(id: Long)
 
     suspend fun getPlaylists(): List<Playlist>
+
+    suspend fun insertTrack(track: Track)
+
+    suspend fun removeTrackFromPlaylist(trackId: String, playlist: Playlist)
+
+    suspend fun checkAndRemoveOrphanedTrack(trackId: String)
+
+    fun getTracksByIds(trackIds: List<String>): Flow<List<Track>>
+
 }

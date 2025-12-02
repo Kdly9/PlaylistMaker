@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.example.playlistmaker.media.domain.model.Playlist
+import com.example.playlistmaker.media.ui.NewPlaylistState
 import com.example.playlistmaker.media.view_model.NewPlaylistViewModel
 import com.example.playlistmaker.utils.dpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -51,6 +53,37 @@ class FragmentNewPlaylist : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val playlistId = arguments?.getLong(PLAYLIST_ID) ?: -1L
+
+        newPlaylistViewModel.setPlaylist(playlistId)
+
+        newPlaylistViewModel.screenState.observe(viewLifecycleOwner) { state ->
+
+            when (state) {
+                is NewPlaylistState.EditState -> {
+                    binding.playlistToolbar.title = getString(R.string.edit)
+                    binding.createButton.text = getString(R.string.save)
+                    binding.playlistNameEditText.setText(state.playlist.name)
+                    binding.playlistDescriptionEditText.setText(state.playlist.description)
+                    playlistName = state.playlist.name
+                    playlistDescription = state.playlist.description ?: ""
+
+                    state.playlist.imagePath?.let {
+                        Glide.with(binding.imagePlaylist)
+                            .load(File(it))
+                            .into(binding.imagePlaylist)
+                        binding.icon.isVisible = false
+                        imageUri = File(it).toUri()
+                    }
+                }
+
+                is NewPlaylistState.CreateState -> {
+                    binding.playlistToolbar.title = getString(R.string.new_playlist)
+                    binding.createButton.text = getString(R.string.create)
+                }
+            }
+        }
 
         binding.playlistToolbar.setOnClickListener {
             confirmationDialog()
@@ -156,7 +189,11 @@ class FragmentNewPlaylist : Fragment() {
             )
 
             newPlaylistViewModel.savePlaylist(newPlaylist)
-            val message = getString(R.string.playlist_created_message, playlistName)
+            val message = if (playlistId != 0L) {
+                getString(R.string.playlist_created_message, playlistName)
+            } else {
+                getString(R.string.playlist_changed_message, playlistName)
+            }
             Toast.makeText(
                 requireContext(),
                 message,
@@ -185,22 +222,37 @@ class FragmentNewPlaylist : Fragment() {
         }
     }
 
-    private fun confirmationDialog() {
-        if (imageUri != null || playlistName.isNotEmpty()) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.dialog_title)
-                .setMessage(R.string.dialog_info)
-                .setNeutralButton(R.string.cancel) { dialog, which ->
-                }
-                .setPositiveButton(R.string.close) { dialog, which ->
-                    findNavController().navigateUp()
-                }
-                .show()
-        } else findNavController().navigateUp()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun confirmationDialog() {
+        val state = newPlaylistViewModel.screenState.value
+        if (state is NewPlaylistState.EditState) {
+            findNavController().navigateUp()
+        } else {
+            if (imageUri != null || playlistName.isNotEmpty()) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.dialog_title)
+                    .setMessage(R.string.dialog_info)
+                    .setNeutralButton(R.string.cancel) { dialog, which ->
+                    }
+                    .setPositiveButton(R.string.close) { dialog, which ->
+                        findNavController().navigateUp()
+                    }
+                    .show()
+            } else {
+                findNavController().navigateUp()
+            }
+        }
+    }
+
+    companion object {
+
+        private const val PLAYLIST_ID = "playlistId"
+        fun createArgs(id: Long): Bundle = Bundle().apply {
+            putLong(PLAYLIST_ID, id)
+        }
     }
 }

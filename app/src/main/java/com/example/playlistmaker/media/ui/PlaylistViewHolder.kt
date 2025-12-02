@@ -21,8 +21,7 @@ class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(item: Playlist, loadImage: (String) -> Bitmap?) {
         playlistName.text = item.name
-        tracksNumbers.text =
-            context.resources.getQuantityString(R.plurals.track, item.tracksCount, item.tracksCount)
+        tracksNumbers.text = context.resources.getQuantityString(R.plurals.track, item.tracksCount, item.tracksCount)
 
         when {
             !item.imagePath.isNullOrEmpty() -> {
