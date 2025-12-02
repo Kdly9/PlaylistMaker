@@ -11,6 +11,6 @@ val mediaRepositoryModule = module {
         FavouritesTrackRepositoryImpl(get(), get())
     }
     single<PlaylistRepository> {
-        PlaylistRepositoryImpl(get(), get())
+        PlaylistRepositoryImpl(get(), get(), get())
     }
 }

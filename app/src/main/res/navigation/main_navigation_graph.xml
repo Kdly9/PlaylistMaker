@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_mediaLibraryFragment_to_fragmentNewPlaylist"
             app:destination="@id/fragmentNewPlaylist" />
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_fragmentPlaylistList"
+            app:destination="@id/fragmentPlaylistList" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -45,4 +48,15 @@
         android:name="com.example.playlistmaker.media.ui.fragments.FragmentNewPlaylist"
         android:label="fragment_new_playlist"
         tools:layout="@layout/fragment_new_playlist" />
+    <fragment
+        android:id="@+id/fragmentPlaylistList"
+        android:name="com.example.playlistmaker.media.ui.fragments.FragmentPlaylistList"
+        android:label="FragmentPlaylistList" >
+        <action
+            android:id="@+id/action_fragmentPlaylistList_to_playerFragment"
+            app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_fragmentPlaylistList_to_fragmentNewPlaylist"
+            app:destination="@id/fragmentNewPlaylist" />
+    </fragment>
 </navigation>

@@ -46,11 +46,20 @@ class TracksAdapter(private val listener: OnTrackClickListener) :
         val view = LayoutInflater.from(parent.context).inflate(R.layout.search_view, parent, false)
         return TracksViewHolder(view)
     }
+    private var onLongClickListener: ((Track) -> Unit)? = null
+
+    fun setOnLongClickListener(listener: (Track) -> Unit) {
+        onLongClickListener = listener
+    }
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(tracksList[position])
         holder.itemView.setOnClickListener {
             listener.onTrackClick(tracksList[position])
+        }
+        holder.itemView.setOnLongClickListener {
+            onLongClickListener?.invoke(tracksList[position])
+            true
         }
     }
 

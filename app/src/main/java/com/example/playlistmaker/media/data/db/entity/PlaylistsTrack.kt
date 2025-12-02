@@ -15,5 +15,6 @@ data class PlaylistsTrack(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String,
-    val isFavourite: Boolean = false
+    val isFavourite: Boolean = false,
+    val addedDate: Long = System.currentTimeMillis()
 )

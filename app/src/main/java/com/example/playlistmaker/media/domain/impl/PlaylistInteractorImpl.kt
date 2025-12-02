@@ -29,7 +29,7 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
     }
 
     override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist) {
-
+        playlistRepository.insertTrack(track)
         val updatedTrackIds = playlist.trackIds.toMutableList().apply {
             add(track.trackId)
         }
@@ -45,4 +45,13 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
     override suspend fun getPlaylists(): List<Playlist> {
         return playlistRepository.getPlaylists()
     }
+
+    override fun getTracksByIds(trackIds: List<String>): Flow<List<Track>> {
+        return playlistRepository.getTracksByIds(trackIds)
+    }
+
+    override suspend fun removeTrackFromPlaylist(trackId: String, playlist: Playlist) {
+        playlistRepository.removeTrackFromPlaylist(trackId, playlist)
+    }
+
 }
