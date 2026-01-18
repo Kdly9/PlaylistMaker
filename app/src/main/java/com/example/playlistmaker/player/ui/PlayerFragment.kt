@@ -255,6 +255,7 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.playButton.deleteUpListener()
         _binding = null
     }
 

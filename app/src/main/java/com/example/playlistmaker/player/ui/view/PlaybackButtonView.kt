@@ -39,6 +39,9 @@ class PlaybackButtonView @JvmOverloads constructor(
         upListener = listener
     }
 
+    fun deleteUpListener() {
+        upListener = null
+    }
 
     init {
         context.theme.obtainStyledAttributes(
@@ -78,6 +81,7 @@ class PlaybackButtonView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 return true
             }
+
             MotionEvent.ACTION_UP -> {
                 upListener?.onUp()
                 return true
@@ -88,8 +92,10 @@ class PlaybackButtonView @JvmOverloads constructor(
     }
 
     fun setState(newState: ButtonState) {
-        state = newState
-        invalidate()
+        if (newState != state) {
+            state = newState
+            invalidate()
+        }
     }
 
     interface UpListener {
