@@ -16,6 +16,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
+import com.example.playlistmaker.player.ui.view.PlaybackButtonView
+import com.example.playlistmaker.player.ui.view.PlaybackButtonView.ButtonState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.dpToPx
@@ -178,19 +180,16 @@ class PlayerFragment : Fragment() {
             when (it) {
                 PlayerState.CompletionAction -> {
                     binding.currentTime.text = dateFormat.format(0)
-                    binding.playButton.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_play)
+                    binding.playButton.setState(ButtonState.PAUSE)
                 }
 
                 PlayerState.Paused -> {
-                    binding.playButton.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_play)
+                    binding.playButton.setState(ButtonState.PAUSE)
                 }
 
                 is PlayerState.Start -> {
                     binding.currentTime.text = dateFormat.format(it.currentPosition)
-                    binding.playButton.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_pause)
+                    binding.playButton.setState(ButtonState.PLAY)
                 }
 
                 is PlayerState.Favorite -> {
@@ -237,6 +236,11 @@ class PlayerFragment : Fragment() {
         binding.playButton.setOnClickListener {
             playerViewModel.playbackControl()
         }
+        binding.playButton.setUpListener(object : PlaybackButtonView.UpListener {
+            override fun onUp() {
+                playerViewModel.playbackControl()
+            }
+        })
 
         playerViewModel.observePlaylists().observe(viewLifecycleOwner) { playlists ->
             playlistsBottomSheetAdapter.playlists = playlists
@@ -251,6 +255,7 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.playButton.deleteUpListener()
         _binding = null
     }
 
