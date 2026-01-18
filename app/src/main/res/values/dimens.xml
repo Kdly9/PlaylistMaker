@@ -20,4 +20,5 @@
     <dimen name="fragment_bottom_margin_image">16dp</dimen>
     <dimen name="fragment_info_text_size">19sp</dimen>
     <dimen name="add_playlist_text_size">14sp</dimen>
+    <dimen name="playback_button_size">100dp</dimen>
 </resources>
