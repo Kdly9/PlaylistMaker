@@ -5,7 +5,7 @@ import com.example.playlistmaker.player.domain.api.MediaManager
 
 class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaInteractor {
     private var playerState = STATE_DEFAULT
-    private lateinit var listener: MediaInteractor.Completion
+    private var listener: MediaInteractor.Completion? = null
     private var updateCurrentTimeListener: ((String) -> Unit)? = null
     override fun preparePlayer(url: String, completionListener: MediaInteractor.Completion) {
         listener = completionListener
@@ -16,19 +16,23 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
             }
             mediaManager.setOnCompletionListener {
                 playerState = STATE_PREPARED
-                listener.completionAction()
+                listener?.completionAction()
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
             playerState = STATE_ERROR
-            listener.errorPrepare()
+            listener?.errorPrepare()
         }
+    }
+
+    override fun removeCompletionListener(){
+        listener = null
     }
 
     override fun startPlayer() {
         if (playerState != STATE_ERROR) {
             mediaManager.startPlayer()
-            listener.startPlayer()
+            listener?.startPlayer()
             playerState = STATE_PLAYING
         }
     }
@@ -37,7 +41,7 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
         if (playerState != STATE_ERROR) {
             if (playerState == STATE_PLAYING) {
                 mediaManager.pausePlayer()
-                listener.pausePlayer()
+                listener?.pausePlayer()
                 playerState = STATE_PAUSED
             }
         }
@@ -51,6 +55,10 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
         mediaManager.reset()
     }
 
+    override fun stop() {
+        mediaManager.stop()
+    }
+
     override fun playbackControl() {
         when (playerState) {
             STATE_PLAYING -> {
@@ -59,17 +67,21 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
 
             STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
-                listener.paused()
+                listener?.paused()
             }
 
             STATE_ERROR -> {
-                listener.errorPrepare()
+                listener?.errorPrepare()
             }
         }
     }
 
     override fun getCurrentPosition(): Int {
-        return mediaManager.getCurrentPosition()
+        return if (playerState == STATE_PLAYING || playerState == STATE_PREPARED || playerState == STATE_PAUSED) {
+            mediaManager.getCurrentPosition()
+        } else {
+            0
+        }
     }
 
     override fun setUpdateCurrentTimeListener(listener: (String) -> Unit) {
@@ -77,7 +89,11 @@ class MediaPlayerInteractorImpl(private val mediaManager: MediaManager) : MediaI
     }
 
     override fun mediaIsPlaying(): Boolean {
-        return mediaManager.isPlaying()
+        return if (playerState == STATE_PLAYING || playerState == STATE_PREPARED || playerState == STATE_PAUSED) {
+            mediaManager.isPlaying()
+        } else {
+            false
+        }
     }
 
     companion object {

@@ -29,6 +29,10 @@ class MediaManagerImpl(private val mediaPlayer: MediaPlayer) : MediaManager {
         mediaPlayer.reset()
     }
 
+    override fun stop() {
+        mediaPlayer.stop()
+    }
+
     override fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
     }

@@ -1,11 +1,19 @@
 package com.example.playlistmaker.player.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -16,6 +24,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
+import com.example.playlistmaker.player.services.MusicService
 import com.example.playlistmaker.player.ui.view.PlaybackButtonView
 import com.example.playlistmaker.player.ui.view.PlaybackButtonView.ButtonState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
@@ -47,6 +56,46 @@ class PlayerFragment : Fragment() {
         private const val SELECTED_KEY = "selected_key"
 
         fun createArgs(key: Track): Bundle = bundleOf(SELECTED_KEY to key)
+    }
+
+    private var songUrl = ""
+    private var artistName = ""
+    private var trackName = ""
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicServiceBinder
+            playerViewModel.setAudioPlayerControl(binder.getService())
+            playerViewModel.preparePlayer()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            playerViewModel.removeAudioPlayerControl()
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Если выдали разрешение — привязываемся к сервису.
+            bindMusicService()
+        } else {
+            // Иначе просто покажем ошибку
+            Toast.makeText(requireContext(), "Can't bind service!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun bindMusicService() {
+        val stopIntent = Intent(requireContext(), MusicService::class.java)
+        requireContext().stopService(stopIntent)
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra("song_url", songUrl)
+            putExtra("artist_name", artistName)
+            putExtra("track_name", trackName)
+        }
+        ContextCompat.startForegroundService(requireContext(), intent)
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun initPlaylistsAdapter(track: Track) {
@@ -92,7 +141,16 @@ class PlayerFragment : Fragment() {
         val track = arguments?.getParcelable<Track>(SELECTED_KEY)
 
         if (track != null) {
+            songUrl = track.previewUrl
+            artistName = track.artistName
+            trackName = track.trackName
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                bindMusicService()
+            }
             playerViewModel.setTrack(track)
+
             initPlaylistsAdapter(track)
         }
 
@@ -174,11 +232,23 @@ class PlayerFragment : Fragment() {
                 .show()
         }
 
-        playerViewModel.preparePlayer()
+
+        playerViewModel.observeTrackFavorite().observe(viewLifecycleOwner){
+            if (it) {
+                binding.likeButton.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_favourite)
+            } else {
+                binding.likeButton.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_like)
+
+            }
+        }
 
         playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
             when (it) {
                 PlayerState.CompletionAction -> {
+                    if(view == null)
+                        return@observe
                     binding.currentTime.text = dateFormat.format(0)
                     binding.playButton.setState(ButtonState.PAUSE)
                 }
@@ -190,17 +260,6 @@ class PlayerFragment : Fragment() {
                 is PlayerState.Start -> {
                     binding.currentTime.text = dateFormat.format(it.currentPosition)
                     binding.playButton.setState(ButtonState.PLAY)
-                }
-
-                is PlayerState.Favorite -> {
-                    if (it.isFavorite) {
-                        binding.likeButton.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_favourite)
-                    } else {
-                        binding.likeButton.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_like)
-
-                    }
                 }
             }
         }
@@ -233,9 +292,7 @@ class PlayerFragment : Fragment() {
             .transform(CenterCrop(), RoundedCorners(dpToPx(8f, requireContext())))
             .into(binding.image)
 
-        binding.playButton.setOnClickListener {
-            playerViewModel.playbackControl()
-        }
+
         binding.playButton.setUpListener(object : PlaybackButtonView.UpListener {
             override fun onUp() {
                 playerViewModel.playbackControl()
@@ -248,12 +305,19 @@ class PlayerFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        playerViewModel.hideNotification()
+    }
+
     override fun onPause() {
         super.onPause()
-        playerViewModel.onPause()
+        playerViewModel.showNotification()
     }
 
     override fun onDestroyView() {
+        playerViewModel.hideNotification()
+        requireContext().unbindService(serviceConnection)
         super.onDestroyView()
         binding.playButton.deleteUpListener()
         _binding = null

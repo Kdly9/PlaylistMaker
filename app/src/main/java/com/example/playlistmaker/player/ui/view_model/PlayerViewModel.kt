@@ -7,26 +7,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.media.domain.api.FavoritesTracksInteractor
 import com.example.playlistmaker.media.domain.api.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
-import com.example.playlistmaker.player.domain.api.MediaInteractor
+import com.example.playlistmaker.player.services.AudioPlayerControl
 import com.example.playlistmaker.player.ui.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.livedata.SingleLiveEvent
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val mediaPlayerInteractor: MediaInteractor,
     private val favouritesTracksInteractor: FavoritesTracksInteractor,
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private var track: Track? = null
-    private var timerJob: Job? = null
 
     private val playerState = MutableLiveData<PlayerState>()
     fun observePlayerState(): LiveData<PlayerState> = playerState
+
+    private val trackFavorite = MutableLiveData<Boolean>()
+    fun observeTrackFavorite(): LiveData<Boolean> = trackFavorite
 
     private val showToast = SingleLiveEvent<Boolean>()
     fun observeShowToast(): LiveData<Boolean> = showToast
@@ -37,9 +36,7 @@ class PlayerViewModel(
     private val playlists = MutableLiveData<List<Playlist>>()
     fun observePlaylists(): LiveData<List<Playlist>> = playlists
 
-    companion object {
-        private const val UPDATE_TIME = 300L
-    }
+    private var audioPlayerControl: AudioPlayerControl? = null
 
     fun setTrack(track: Track) {
         this.track = track
@@ -59,11 +56,11 @@ class PlayerViewModel(
                     .any { it.trackId == track?.trackId }
             ) {
                 track?.isFavorite = false
-                playerState.postValue(PlayerState.Favorite(false))
+                trackFavorite.postValue(false)
                 track?.trackId?.let { favouritesTracksInteractor.deleteTrack(it) }
             } else {
                 track?.isFavorite = true
-                playerState.postValue(PlayerState.Favorite(true))
+                trackFavorite.postValue(true)
                 track?.let {
                     favouritesTracksInteractor.addTrack(it)
                 }
@@ -78,19 +75,9 @@ class PlayerViewModel(
                     .first()
                     .any { it.trackId == track?.trackId }
             ) {
-                playerState.postValue(PlayerState.Favorite(true))
+                trackFavorite.postValue(true)
             } else {
-                playerState.postValue(PlayerState.Favorite(false))
-            }
-        }
-    }
-
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            while (mediaPlayerInteractor.mediaIsPlaying()) {
-                delay(UPDATE_TIME)
-                playerState.postValue(PlayerState.Start(currentPosition = mediaPlayerInteractor.getCurrentPosition()))
+                trackFavorite.postValue(false)
             }
         }
     }
@@ -106,50 +93,41 @@ class PlayerViewModel(
         }
     }
 
+    fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
+        this.audioPlayerControl = audioPlayerControl
+    }
+
+    fun removeAudioPlayerControl() {
+        audioPlayerControl = null
+    }
+
     fun preparePlayer() {
-        track?.let {
-            mediaPlayerInteractor.preparePlayer(
-                it.previewUrl,
-                object : MediaInteractor.Completion {
-                    override fun completionAction() {
-                        playerState.postValue(PlayerState.CompletionAction)
-                        timerJob?.cancel()
-                    }
-
-                    override fun errorPrepare() {
-                        showToast.postValue(true)
-                    }
-
-                    override fun startPlayer() {
-                        playerState.postValue(PlayerState.Start(currentPosition = mediaPlayerInteractor.getCurrentPosition()))
-                    }
-
-                    override fun pausePlayer() {
-                        timerJob?.cancel()
-                        playerState.postValue(PlayerState.Paused)
-                    }
-
-                    override fun paused() {
-                        startTimer()
-                    }
-                })
+        viewModelScope.launch {
+            audioPlayerControl?.getPlayerState()?.collect {
+                playerState.postValue(it)
+            }
         }
     }
 
     fun playbackControl() {
-        mediaPlayerInteractor.playbackControl()
+        audioPlayerControl?.controlPlayer()
     }
 
     fun onPause() {
-        mediaPlayerInteractor.pausePlayer()
+        audioPlayerControl?.pausePlayer()
     }
 
-    fun onRelease() {
-        mediaPlayerInteractor.release()
+    fun showNotification() {
+        audioPlayerControl?.showNotification()
     }
 
-    fun onReset() {
-        mediaPlayerInteractor.reset()
+    fun hideNotification() {
+        audioPlayerControl?.hideNotification()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        audioPlayerControl = null
     }
 
     sealed interface PlaylistState {
