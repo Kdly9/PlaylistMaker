@@ -9,6 +9,4 @@ sealed interface PlayerState {
     ) : PlayerState
 
     data object Paused : PlayerState
-
-    data class Favorite(val isFavorite: Boolean) : PlayerState
 }
