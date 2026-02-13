@@ -1,12 +1,14 @@
 package com.example.playlistmaker.settings.ui.view_model
 
-import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.settings.domain.api.ThemeInteractor
 import com.example.playlistmaker.settings.ui.ThemeState
 import com.example.playlistmaker.sharing.domain.api.SharingInteractor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val sharingInteractor: SharingInteractor,
@@ -14,8 +16,8 @@ class SettingsViewModel(
 ) : ViewModel() {
 
 
-    private val themeState = MutableLiveData<ThemeState>()
-    fun observeMode(): LiveData<ThemeState> = themeState
+    private val _themeState = MutableStateFlow<ThemeState>(ThemeState.NoSavedParams)
+    val themeState: StateFlow<ThemeState> = _themeState.asStateFlow()
 
     init {
         getTheme()
@@ -38,16 +40,20 @@ class SettingsViewModel(
     }
 
     private fun getTheme() {
-        if (themeInteractor.checkParamsExisting()) {
-            val darkMode = themeInteractor.isDarkMode()
-            themeState.postValue(ThemeState.SavedParamsExist(darkMode))
-        } else {
-            themeState.postValue(ThemeState.NoSavedParams)
+        viewModelScope.launch {
+            if (themeInteractor.checkParamsExisting()) {
+                val darkMode = themeInteractor.isDarkMode()
+                _themeState.value = ThemeState.SavedParamsExist(darkMode)
+            } else {
+                _themeState.value = ThemeState.NoSavedParams
+            }
         }
     }
 
     fun enableDarkMode(enable: Boolean) {
-        themeInteractor.enableDarkMode(enable)
-        themeState.postValue(ThemeState.SavedParamsExist(enable))
+        viewModelScope.launch {
+            themeInteractor.enableDarkMode(enable)
+            _themeState.value = ThemeState.SavedParamsExist(enable)
+        }
     }
 }

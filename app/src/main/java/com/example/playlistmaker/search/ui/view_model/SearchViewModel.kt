@@ -1,7 +1,6 @@
 package com.example.playlistmaker.search.ui.view_model
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
@@ -10,15 +9,18 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.TracksState
 import com.example.playlistmaker.utils.debounce
 import com.example.playlistmaker.utils.livedata.SingleLiveEvent
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
 
 class SearchViewModel(
     private val trackInteractor: TracksInteractor,
     private val tracksHistoryInteractor: TracksHistoryInteractor
 ) : ViewModel() {
 
-    private val searchState = MutableLiveData<TracksState>()
-    fun observeSearchState(): LiveData<TracksState> = searchState
+    private val _searchState = MutableStateFlow<TracksState>(TracksState.Empty)
+    val searchState = _searchState.asStateFlow()
 
     private val runPlayer = SingleLiveEvent<Track>()
     fun observeRunPlayer(): LiveData<Track> = runPlayer
@@ -34,6 +36,10 @@ class SearchViewModel(
 
     fun clearCurrentSearchText() {
         currentSearchText = ""
+    }
+
+    fun getCurrentSearchText():String {
+        return currentSearchText
     }
 
     companion object {
@@ -62,7 +68,7 @@ class SearchViewModel(
     private fun itunesResponse(text: String) {
         if (text.isNotEmpty()) {
 
-            searchState.postValue(TracksState.Loading)
+            _searchState.value = TracksState.Loading
 
             viewModelScope.launch {
                 trackInteractor
@@ -82,15 +88,15 @@ class SearchViewModel(
 
         when {
             errorMessage != null -> {
-                searchState.postValue(TracksState.Failure)
+                _searchState.value = TracksState.Failure
             }
 
             tracks.isEmpty() -> {
-                searchState.postValue(TracksState.Empty)
+                _searchState.value = TracksState.Empty
             }
 
             else -> {
-                searchState.postValue(TracksState.Content(tracks))
+                _searchState.value = TracksState.Content(tracks)
             }
         }
     }
@@ -112,16 +118,16 @@ class SearchViewModel(
     }
 
     fun showHistory(show: Boolean) {
-        if (show) {
+        if (show && currentSearchText.isEmpty()) {
             val history = tracksHistoryInteractor.getHistory() as ArrayList<Track>
             if (history.isEmpty()) {
-                searchState.postValue(TracksState.History(emptyList()))
+                _searchState.value = TracksState.History(emptyList())
             } else {
-                searchState.postValue(TracksState.History(history))
+                _searchState.value = TracksState.History(history)
             }
 
         } else {
-            searchState.postValue(TracksState.History(emptyList()))
+            _searchState.value = TracksState.History(emptyList())
         }
     }
 

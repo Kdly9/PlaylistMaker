@@ -13,7 +13,7 @@ data class TrackEntity (
     var trackTimeMillis: String,
     var artworkUrl100: String?,
     var collectionName: String?,
-    var releaseDate: String,
+    var releaseDate: String?,
     var primaryGenreName: String,
     var country: String,
     var previewUrl: String,
