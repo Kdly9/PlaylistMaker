@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Tab
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,7 @@ import com.example.playlistmaker.media.view_model.FavoriteTracksViewModel
 import com.example.playlistmaker.media.view_model.PlaylistsViewModel
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.theme.LocalCustomColors
+import com.example.playlistmaker.theme.LocalTypography
 import kotlinx.coroutines.launch
 
 
@@ -49,9 +52,18 @@ fun MediaLibraryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp)
     )
     {
+        Text(
+            text = stringResource(R.string.media_library),
+            modifier = Modifier
+                .height(56.dp)
+                .padding(start = 16.dp)
+                .wrapContentHeight(Alignment.CenterVertically),
+            style = LocalTypography.current.titleMedium,
+            color = LocalCustomColors.current.textColor
+        )
+
         TabRow(
             selectedTabIndex = selectedTabIndex.intValue,
             modifier = Modifier.fillMaxWidth(),
