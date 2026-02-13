@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -53,11 +52,7 @@ class FragmentPlaylists : Fragment() {
 
         binding.recyclerView.adapter = adapter
 
-        viewModel.observePlaylists.observe(viewLifecycleOwner) { playlists ->
-            adapter.submitList(playlists)
-            binding.emptyLists.isVisible = playlists.isEmpty()
-            binding.recyclerView.isVisible = playlists.isNotEmpty()
-        }
+
     }
 
 

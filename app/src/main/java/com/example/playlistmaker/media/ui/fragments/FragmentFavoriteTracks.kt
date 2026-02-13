@@ -55,7 +55,7 @@ class FragmentFavoriteTracks : Fragment() {
 
         binding.recyclerView.adapter = tracksAdapter
 
-        favouritesViewModel.observeState().observe(viewLifecycleOwner){state ->
+/*        favouritesViewModel.observeState().observe(viewLifecycleOwner){state ->
             when(state){
                 is FavouritesState.Content -> {
                     tracksAdapter.updateData(state.tracks)
@@ -69,7 +69,7 @@ class FragmentFavoriteTracks : Fragment() {
                 }
             }
 
-        }
+        }*/
 
 
     }

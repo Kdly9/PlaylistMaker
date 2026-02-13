@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.media.domain.api.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
 
-    private val playlists = MutableLiveData<List<Playlist>>()
-    val observePlaylists: LiveData<List<Playlist>> = playlists
+    private val _playlists = MutableStateFlow<List<Playlist>>(emptyList())
+    val observePlaylists = _playlists.asStateFlow()
 
     init {
         loadPlaylists()
@@ -21,10 +23,10 @@ class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : V
         viewModelScope.launch {
             try {
                 playlistInteractor.getAllPlaylists().collect { playlist ->
-                    playlists.value = playlist
+                    _playlists.value = playlist
                 }
             } catch (e: Exception) {
-                playlists.value = emptyList()
+                _playlists.value = emptyList()
             }
         }
     }

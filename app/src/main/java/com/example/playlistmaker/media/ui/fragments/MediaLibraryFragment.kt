@@ -4,45 +4,49 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentMediaLibraryBinding
-import com.example.playlistmaker.media.PagerAdapter
-import com.google.android.material.tabs.TabLayoutMediator
+import com.example.playlistmaker.player.ui.PlayerFragment
+import com.example.playlistmaker.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MediaLibraryFragment : Fragment() {
-
-    private var _binding: FragmentMediaLibraryBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var tabLayoutMediator: TabLayoutMediator
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentMediaLibraryBinding.inflate(inflater)
-        return binding.root
-    }
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                AppTheme(darkTheme = isSystemInDarkTheme()) {
+                    MediaLibraryScreen(
+                        tracksViewModel = koinViewModel(),
+                        playlistsViewModel = koinViewModel(),
+                        onTrackClick = { track ->
+                            findNavController().navigate(
+                                R.id.action_mediaLibraryFragment_to_playerFragment,
+                                PlayerFragment.createArgs(track)
+                            )
+                        },
+                        onPlaylistClick = { playlist ->
+                            findNavController().navigate(
+                                R.id.action_mediaLibraryFragment_to_fragmentPlaylistList,
+                                FragmentPlaylistList.createArgs(playlist.id)
+                            )
+                        },
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.viewPager.adapter =
-            PagerAdapter(childFragmentManager, lifecycle)
-
-        tabLayoutMediator = TabLayoutMediator(binding.tab, binding.viewPager) { tab, position ->
-            when (position) {
-                0 -> tab.text = getString(R.string.favourites)
-                1 -> tab.text = getString(R.string.playlists)
+                        onNewPlaylistClick = {
+                            findNavController().navigate(
+                                R.id.action_mediaLibraryFragment_to_fragmentNewPlaylist
+                            )
+                        }
+                    )
+                }
             }
         }
-        tabLayoutMediator.attach()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        tabLayoutMediator.detach()
-        _binding = null
     }
 }

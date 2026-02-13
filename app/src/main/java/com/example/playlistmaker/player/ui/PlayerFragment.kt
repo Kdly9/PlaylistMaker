@@ -94,7 +94,6 @@ class PlayerFragment : Fragment() {
             putExtra("artist_name", artistName)
             putExtra("track_name", trackName)
         }
-        ContextCompat.startForegroundService(requireContext(), intent)
         requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
@@ -166,8 +165,8 @@ class PlayerFragment : Fragment() {
             binding.albumText.text = track.collectionName
         }
 
-        if (track.releaseDate.isNotEmpty()) {
-            binding.yearText.text = track.releaseDate.substring(0, 4)
+        if (!track.releaseDate.isNullOrEmpty()) {
+            binding.yearText.text = track.releaseDate?.substring(0, 4)
         }
 
         binding.styleText.text = track.primaryGenreName
