@@ -14,4 +14,11 @@
     <dimen name="text_margin_horizontal">16dp</dimen>
     <dimen name="text_margin_vertical">8dp</dimen>
     <dimen name="track_image_size">45dp</dimen>
+    <dimen name="indicator_height">2dp</dimen>
+    <dimen name="tabs_text_size">14sp</dimen>
+    <dimen name="fragment_top_margin_image">106dp</dimen>
+    <dimen name="fragment_bottom_margin_image">16dp</dimen>
+    <dimen name="fragment_info_text_size">19sp</dimen>
+    <dimen name="add_playlist_text_size">14sp</dimen>
+    <dimen name="playback_button_size">100dp</dimen>
 </resources>

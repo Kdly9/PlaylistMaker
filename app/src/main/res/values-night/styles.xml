@@ -77,4 +77,67 @@
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:textColor">@color/rich_black</item>
     </style>
+
+    <style name="SearchTextStyle">
+        <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="PlayerTextStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/silver_gray</item>
+    </style>
+
+    <style name="PlayerDataTextStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TimeStyle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="MediaLibraryTabsStyle">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabTextColor">@color/white</item>
+    </style>
+
+    <style name="MediaLibraryTextInfoStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/fragment_info_text_size</item>
+    </style>
+
+    <style name="AddPlaylistButtonStyle">
+        <item name="android:textColor">@color/rich_black</item>
+        <item name="android:textSize">@dimen/add_playlist_text_size</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+
+    <style name="TextAppearanceActive" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="TextAppearanceInactive" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="NavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconTint">@color/menu_item_colors</item>
+        <item name="itemTextColor">@color/menu_item_colors</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearanceActive</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearanceInactive</item>
+        <item name="backgroundTint">?attr/colorSecondary</item>
+    </style>
+
+
 </resources>
